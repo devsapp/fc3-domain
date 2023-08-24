@@ -152,7 +152,6 @@ export class CustomDomain {
           }
           rewriteConfig.wildcardRules = newWRs;
         }
-
         path.rewriteConfig = rewriteConfig;
       }
       routes.push(path);

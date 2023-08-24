@@ -6,7 +6,7 @@ import * as $OpenApi from '@alicloud/openapi-client';
 import { ICredentials } from '@serverless-devs/component-interface';
 import { diffConvertPlanYaml, diffConvertYaml } from '@serverless-devs/diff';
 import { parseArgv } from '@serverless-devs/utils';
-import { promptForConfirmOrDetails, promptForConfirmOK } from './util';
+import { promptForConfirmOrDetails, promptForConfirmOK, sleep } from './util';
 import { CustomDomain } from './custom_domain';
 
 export enum FC_API_ERROR_CODE {
@@ -19,18 +19,13 @@ const FC_CLIENT_CONNECT_TIMEOUT: number =
   parseInt(process.env.FC_CLIENT_CONNECT_TIMEOUT || '5') * 1000;
 const FC_CLIENT_READ_TIMEOUT: number = parseInt(process.env.FC_CLIENT_READ_TIMEOUT || '10') * 1000;
 
-export const sleep = async (second: number): Promise<void> =>
-  await new Promise((resolve) => setTimeout(resolve, second * 1000));
-
 export class Domain {
-  input: IInputs;
   region: string;
   readonly fc20230330Client: FCClient;
-  yes: boolean;
+  yes: boolean = false;
   customDomain: CustomDomain;
 
-  constructor(input: IInputs, readonly credentials: ICredentials) {
-    this.input = input;
+  constructor(readonly input: IInputs, readonly credentials: ICredentials) {
     this.region = this.input.props.region;
     const {
       AccountID: accountID,
@@ -50,15 +45,19 @@ export class Domain {
       endpoint,
       readTimeout: FC_CLIENT_READ_TIMEOUT,
       connectTimeout: FC_CLIENT_CONNECT_TIMEOUT,
+      userAgent: 'serverless-devs',
     });
 
     this.fc20230330Client = new FCClient(config);
 
-    this.yes = false;
-    const command = parseArgv(this.input.args);
-    if (command.y) {
-      this.yes = true;
-    }
+    const command = parseArgv(this.input.args, {
+      alias: {
+        yes: 'y',
+      },
+      boolean: ['yes'],
+    });
+    this.yes = !!command.y;
+
     this.customDomain = new CustomDomain(input, credentials);
     this.customDomain.checkPropsValid();
   }

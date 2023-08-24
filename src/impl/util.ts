@@ -39,3 +39,6 @@ export async function promptForConfirmOK(message: string): Promise<boolean> {
   ]);
   return answers.ok;
 }
+
+export const sleep = async (second: number): Promise<void> =>
+  await new Promise((resolve) => setTimeout(resolve, second * 1000));

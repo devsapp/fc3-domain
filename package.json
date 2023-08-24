@@ -23,7 +23,8 @@
     "watch": "tsc -w",
     "format": "prettier --write src/",
     "prebuild": "rimraf dist && npm run format &&  rimraf node_modules && npm i",
-    "build": "esbuild src/index.ts --bundle --log-level=error --minify --platform=node --format=cjs --target=node10.4  --outfile=dist/index.js",
+    "es-build": "esbuild src/index.ts --bundle --log-level=error --minify --platform=node --format=cjs --target=node10.4  --outfile=dist/index.js",
+    "build": "tsc",
     "prepare": "husky install"
   },
   "dependencies": {

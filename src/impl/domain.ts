@@ -141,6 +141,8 @@ export class Domain {
   public async remove(): Promise<void> {
     await this.customDomain.tryHandleAutoDomain();
     const logger = GLogger.getLogger();
+    logger.write(`Remove custom domain: ${this.getDomainName()}`);
+    console.log();
     if (this.yes) {
       await this.fc20230330Client.deleteCustomDomain(this.getDomainName());
       logger.debug(`delete custom domain ${(this, this.getDomainName())} success`);

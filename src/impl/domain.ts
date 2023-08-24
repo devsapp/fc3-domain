@@ -59,7 +59,6 @@ export class Domain {
     this.yes = !!command.y;
 
     this.customDomain = new CustomDomain(input, credentials);
-    this.customDomain.checkPropsValid();
   }
 
   getProps = (): any => {
@@ -156,7 +155,9 @@ export class Domain {
 
   public async info(): Promise<any> {
     await this.customDomain.tryHandleAutoDomain();
-    return await this.getCustomDomain();
+    let r = await this.getCustomDomain();
+    _.unset(r, 'certConfig');
+    return r;
   }
 
   public async plan(): Promise<void> {
@@ -232,6 +233,14 @@ ${customDomainConfig.show}
         val.qualifier = 'LATEST';
       }
     }
+    local['certConfig'] = await this.customDomain.getICertConfig();
+    _.unset(local['certConfig'], 'privateKey');
+    _.unset(local['certConfig'], 'certificate');
+    _.unset(remote['certConfig'], 'certificate');
+    if (local['certConfig'] === null) {
+      _.unset(local, 'certConfig');
+    }
+
     return { remote, local };
   }
 
@@ -249,7 +258,9 @@ ${customDomainConfig.show}
     if (_.isEmpty(body.authConfig)) {
       _.unset(body, 'authConfig');
     }
-
+    if (_.isEmpty(body.wafConfig)) {
+      _.unset(body, 'wafConfig');
+    }
     const r = _.omit(body, ['accountId', 'apiVersion', 'createdTime', 'lastModifiedTime']);
     return r;
   }
@@ -260,23 +271,21 @@ ${customDomainConfig.show}
       domainName: this.getDomainName(),
       protocol: _.get(this.getProps(), 'protocol'),
     });
-    const certConfig = await this.customDomain.getCertConfig();
-    if (certConfig !== null) {
-      createCustomDomainInput.certConfig = certConfig;
+
+    if (_.get(this.getProps(), 'certConfig')) {
+      createCustomDomainInput.certConfig = await this.customDomain.getCertConfig();
     }
     if (_.get(this.getProps(), 'routeConfig')) {
       createCustomDomainInput.routeConfig = this.customDomain.getRouteConfig();
     }
     if (_.get(this.getProps(), 'tlsConfig')) {
-      createCustomDomainInput.tlsConfig = new $fc20230330.TLSConfig(
-        _.get(this.getProps(), 'tlsConfig'),
-      );
+      createCustomDomainInput.tlsConfig = this.customDomain.getTLSConfig();
+    }
+    if (_.get(this.getProps(), 'authConfig')) {
+      createCustomDomainInput.authConfig = this.customDomain.getAuthConfig();
     }
     if (_.get(this.getProps(), 'wafConfig')) {
-      const wafConfig = _.get(this.getProps(), 'wafConfig');
-      createCustomDomainInput.wafConfig = new $fc20230330.WAFConfig({
-        enableWAF: wafConfig['enableWAF'],
-      });
+      createCustomDomainInput.wafConfig = this.customDomain.getWafConfig();
     }
     logger.debug(
       `createCustomDomain input ==>\n${JSON.stringify(createCustomDomainInput.toMap())}`,
@@ -294,22 +303,21 @@ ${customDomainConfig.show}
     let updateCustomDomainInput = new $fc20230330.UpdateCustomDomainInput({
       protocol: _.get(this.getProps(), 'protocol'),
     });
-    const certConfig = await this.customDomain.getCertConfig();
-    if (certConfig !== null) {
-      updateCustomDomainInput.certConfig = certConfig;
+
+    if (_.get(this.getProps(), 'certConfig')) {
+      updateCustomDomainInput.certConfig = await this.customDomain.getCertConfig();
     }
     if (_.get(this.getProps(), 'routeConfig')) {
       updateCustomDomainInput.routeConfig = this.customDomain.getRouteConfig();
     }
     if (_.get(this.getProps(), 'tlsConfig')) {
-      // TODO 目前 sdk 不支持
-      // updateCustomDomainInput.tlsConfig = new $fc20230330.TLSConfig(_.get(this.getProps(), 'tlsConfig'));
+      updateCustomDomainInput.tlsConfig = this.customDomain.getTLSConfig();
+    }
+    if (_.get(this.getProps(), 'authConfig')) {
+      updateCustomDomainInput.authConfig = this.customDomain.getAuthConfig();
     }
     if (_.get(this.getProps(), 'wafConfig')) {
-      const wafConfig = _.get(this.getProps(), 'wafConfig');
-      updateCustomDomainInput.wafConfig = new $fc20230330.WAFConfig({
-        enableWAF: wafConfig['enableWAF'],
-      });
+      updateCustomDomainInput.wafConfig = this.customDomain.getWafConfig();
     }
 
     logger.debug(

@@ -3,7 +3,7 @@ import * as _ from 'lodash';
 import GLogger from '../common/logger';
 import * as $fc20230330 from '@xi-liu/fc20230330';
 import { ICredentials } from '@serverless-devs/component-interface';
-import { HttpsCertConfig } from './https_cert_config';
+import { HttpsCertConfig, ICertConfig } from './https_cert_config';
 import AutoDomainGenerator from '@serverless-cd/srm-aliyun-fc-domain';
 import { resolveCname } from './util';
 
@@ -16,8 +16,9 @@ export class CustomDomain {
   constructor(input: IInputs, readonly credentials: ICredentials) {
     this.input = input;
     this.region = this.input.props.region;
-    delete this.input.props.region;
+    _.unset(this.input.props, 'region');
     this.domainName = _.get(this.getProps(), 'domainName');
+    this.checkPropsValid();
   }
 
   public async tryHandleAutoDomain() {
@@ -75,18 +76,29 @@ export class CustomDomain {
     return this.domainName;
   }
 
-  public async getCertConfig(): Promise<$fc20230330.CertConfig> {
+  public async getICertConfig(): Promise<ICertConfig> {
     const originCertConfig = _.get(this.getProps(), 'certConfig');
     if (originCertConfig) {
-      const { certName, certificate, privateKey } = await HttpsCertConfig.getCertContent(
-        originCertConfig,
-        { credentials: this.credentials },
-      );
-      return new $fc20230330.CertConfig({
-        certName: certName,
-        certificate: certificate,
-        privateKey: privateKey,
-      });
+      let config: ICertConfig;
+      const certId = _.get(originCertConfig, 'certId');
+      if (certId) {
+        config = await HttpsCertConfig.getUserCertificateDetail(certId, {
+          credentials: this.credentials,
+        });
+      } else {
+        config = await HttpsCertConfig.getCertContent(originCertConfig, {
+          credentials: this.credentials,
+        });
+      }
+      return config;
+    }
+    return null;
+  }
+
+  public async getCertConfig(): Promise<$fc20230330.CertConfig> {
+    const config = await this.getICertConfig();
+    if (config !== null) {
+      return new $fc20230330.CertConfig(config);
     }
     return null;
   }
@@ -126,8 +138,8 @@ export class CustomDomain {
         }
         if (rRs) {
           let newRRs: $fc20230330.RegexRule[] = [];
-          for (const key in newRRs) {
-            const rR = newRRs[key];
+          for (const key in rRs) {
+            const rR = rRs[key];
             logger.debug(`${key}: ${JSON.stringify(rR)}`);
             newRRs.push(
               new $fc20230330.RegexRule({
@@ -159,7 +171,38 @@ export class CustomDomain {
     return new $fc20230330.RouteConfig({ routes: routes });
   }
 
-  // public getRouteConfig(): $fc20230330.AuthConfig {}
+  public getAuthConfig(): $fc20230330.AuthConfig {
+    const originAuthConfig = _.get(this.getProps(), 'authConfig');
+    if (originAuthConfig) {
+      return new $fc20230330.AuthConfig({
+        authInfo: originAuthConfig.authInfo,
+        authType: originAuthConfig.authType,
+      });
+    }
+    return null;
+  }
+
+  public getTLSConfig(): $fc20230330.TLSConfig {
+    const originTLSConfig = _.get(this.getProps(), 'tlsConfig');
+    if (originTLSConfig) {
+      return new $fc20230330.TLSConfig({
+        cipherSuites: originTLSConfig.cipherSuites,
+        maxVersion: originTLSConfig.maxVersion,
+        minVersion: originTLSConfig.minVersion,
+      });
+    }
+    return null;
+  }
+
+  public getWafConfig(): $fc20230330.WAFConfig {
+    const originWAFConfig = _.get(this.getProps(), 'wafConfig');
+    if (originWAFConfig) {
+      return new $fc20230330.WAFConfig({
+        enableWAF: originWAFConfig['enableWAF'],
+      });
+    }
+    return null;
+  }
 
   public checkPropsValid(): void {
     const data = this.getProps();

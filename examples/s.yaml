@@ -3,13 +3,16 @@ name: fcDomainApp #  项目名称
 access: quanxi #  秘钥别名
 
 resources:
-  fc-domain-test: #  服务名称
+  fc-domain-test:
     component: ${path("../")}
     props: #  组件的属性值
       region: cn-huhehaote
       # domainName: test-serverless-devs-custom-domain-ci.fcv3.1431999136518149.cn-huhehaote.fc.devsapp.net
-      domainName: auto
-      protocol: HTTP # HTTP | HTTPS
+      # protocol: HTTP,HTTPS # HTTP | HTTPS | HTTP,HTTPS
+      # domainName: auto
+      # protocol: HTTP # HTTP | HTTPS | HTTP,HTTPS
+      domainName: xiliu-test.shoushuai.top
+      protocol: HTTP,HTTPS
       routeConfig:
         routes:
           - functionName: test-serverless-devs-custom-domain-ci-1
@@ -17,35 +20,54 @@ resources:
               - GET
             path: /a
             qualifier: LATEST
-            # rewriteConfig:
-            #   equalRules:
-            #     - match: /equalRules
-            #       replacement: /xxxx
-            #   regexRules:
-            #     - match: ^/old/[a-z]+/
-            #       replacement: /xxxx
-            #   wildcardRules:
-            #     - match: /api/*
-            #       replacement: /$1
+            rewriteConfig:
+              equalRules:
+                - match: /equalRules
+                  replacement: /xxxx
+              regexRules:
+                - match: ^/old/[a-z]+/
+                  replacement: /xxxx
+              wildcardRules:
+                - match: /api/*
+                  replacement: /$1
           - functionName: test-serverless-devs-custom-domain-ci-2
             methods:
               - GET
             path: /bb
             #qualifier: LATEST
-          - functionName: tmp-test
-            methods:
-              - GET
-            path: /c
-            qualifier: LATEST
+          # - functionName: tmp-test
+          #   methods:
+          #     - GET
+          #   path: /c
+          #   qualifier: LATEST
 
       # wafConfig:
       #   enableWAF: true
 
       # certConfig:
-      #   certName: xxx
-      #   certificate: xxx
-      #   privateKey: xxx
+      #   certName: test-cert
+      #   certificate: /Users/songluo/work/code-inc/domain/examples/xiliu-test.shoushuai.top.pem
+      #   privateKey: /Users/songluo/work/code-inc/domain/examples/xiliu-test.shoushuai.top.key
+
+      # certConfig:
+      #   certName: test-cert
+      #   certificate: https://images.devsapp.cn/test/xiliu-test-cert/xiliu-test.shoushuai.top.pem
+      #   privateKey: https://images.devsapp.cn/test/xiliu-test-cert/xiliu-test.shoushuai.top.key
+
+      certConfig:
+        certName: test-cert
+        certificate: oss://cn-huhehaote/serverless-devs-fc3-ci-test/xiliu-test.shoushuai.top.pem
+        privateKey: oss://cn-huhehaote/serverless-devs-fc3-ci-test/xiliu-test.shoushuai.top.key
+
+      # certConfig:
+      #   certId: test-cert
 
       # authConfig:
       #   authInfo: xxx
       #   authType: jwt || function || anonymous
+
+      tlsConfig:
+        cipherSuites:
+          - TLS_RSA_WITH_RC4_128_SHA
+        maxVersion: TLSv1.3
+        minVersion: TLSv1.0

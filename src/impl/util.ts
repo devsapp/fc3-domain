@@ -7,7 +7,7 @@ const resolveCnameAsync = promisify(dns.resolveCname);
 export async function resolveCname(domain: string, logger: any) {
   try {
     const cnameRecords = await resolveCnameAsync(domain);
-    logger.info(`${domain} is already CNAME  to ${cnameRecords}`);
+    logger.debug(`${domain} is already CNAME  to ${cnameRecords}`);
     return true;
   } catch (error) {
     logger.error(`Error resolving ${domain} CNAME: ${error.message}`);

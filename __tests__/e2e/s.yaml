@@ -1,0 +1,60 @@
+edition: 3.0.0 #  命令行YAML规范版本，遵循语义化版本（Semantic Versioning）规范
+name: fcDomainApp #  项目名称
+access: quanxi #  秘钥别名
+
+resources:
+  fc-domain-test: 
+    component: ${env('domain_component_version', path('../../'))}
+    props: 
+      region: cn-huhehaote
+      domainName: test-serverless-devs-custom-domain-ci.fcv3.1431999136518149.cn-huhehaote.fc.devsapp.net
+      protocol: HTTP
+      routeConfig:
+        routes:
+          - functionName: test-serverless-devs-custom-domain-ci-1
+            methods:
+              - GET
+            path: /a
+            qualifier: LATEST
+            rewriteConfig:
+              equalRules:
+                - match: /equalRules
+                  replacement: /xxxx
+              regexRules:
+                - match: ^/old/[a-z]+/
+                  replacement: /xxxx
+              wildcardRules:
+                - match: /api/*
+                  replacement: /$1
+          - functionName: test-serverless-devs-custom-domain-ci-2
+            methods:
+              - GET
+            path: /b
+
+  fc-domain-auto: 
+    component: ${env('domain_component_version', path('../../'))}
+    props: #  组件的属性值
+      region: cn-huhehaote
+      domainName: auto
+      protocol: HTTP
+      routeConfig:
+        routes:
+          - functionName: test-serverless-devs-custom-domain-ci-1
+            methods:
+              - GET
+            path: /a
+            qualifier: LATEST
+            rewriteConfig:
+              equalRules:
+                - match: /equalRules
+                  replacement: /xxxx
+              regexRules:
+                - match: ^/old/[a-z]+/
+                  replacement: /xxxx
+              wildcardRules:
+                - match: /api/*
+                  replacement: /$1
+          - functionName: test-serverless-devs-custom-domain-ci-2
+            methods:
+              - GET
+            path: /b

@@ -5,13 +5,20 @@ import GLogger from '../common/logger';
 import * as _ from 'lodash';
 const fs = require('fs');
 import Pop from '@alicloud/pop-core';
+const fetch = require('node-fetch');
 
 interface Opt {
   credentials?: ICredentials;
 }
 
+export interface ICertConfig {
+  privateKey: string;
+  certificate: string;
+  certName: string;
+}
+
 export class HttpsCertConfig {
-  static async getCertContent(certConfig: any, opt?: Opt): Promise<any> {
+  static async getCertContent(certConfig: any, opt?: Opt): Promise<ICertConfig> {
     const { certificate, privateKey, certName } = certConfig;
     const privateContent = await this.getCertKeyContent(privateKey, opt);
     const certContent = await this.getCertKeyContent(certificate, opt);
@@ -41,7 +48,7 @@ export class HttpsCertConfig {
     return fs.readFileSync(certKey).toString().trim();
   }
 
-  static async getUserCertificateDetail(certId: number, opt: Opt = {}) {
+  static async getUserCertificateDetail(certId: number, opt: Opt = {}): Promise<ICertConfig> {
     const logger = GLogger.getLogger();
     const { credentials } = opt;
     if (_.isEmpty(credentials)) {

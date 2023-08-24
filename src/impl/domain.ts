@@ -1,7 +1,7 @@
 import { IInputs } from '@serverless-devs/component-interface';
 import * as _ from 'lodash';
 import GLogger from '../common/logger';
-import FCClient, * as $fc20230330 from '@alicloud/fc20230330';
+import FCClient, * as $fc20230330 from '@xi-liu/fc20230330';
 import * as $OpenApi from '@alicloud/openapi-client';
 import { ICredentials } from '@serverless-devs/component-interface';
 import { diffConvertPlanYaml, diffConvertYaml } from '@serverless-devs/diff';
@@ -64,11 +64,11 @@ export class Domain {
 
   getProps = (): any => {
     return this.customDomain.getProps();
-  }
+  };
 
   getDomainName = (): string => {
     return this.customDomain.getDomainName();
-  }
+  };
 
   public async deploy(): Promise<void> {
     const logger = GLogger.getLogger();
@@ -93,7 +93,7 @@ export class Domain {
     const autoCnameCheck = await this.customDomain.cnameCheck();
     let retry = 0;
     let retryTime = 3;
-    let maxRetryCount = FC_DEPLOY_RETRY_COUNT
+    let maxRetryCount = FC_DEPLOY_RETRY_COUNT;
 
     // 如果域名是 auto, 并且使用相同 region cname check 为 false,  重试次数拉长
     if (autoCnameCheck) {

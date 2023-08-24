@@ -15,7 +15,6 @@ export async function resolveCname(domain: string, logger: any) {
   return false;
 }
 
-
 export async function promptForConfirmOrDetails(message: string): Promise<boolean> {
   const answers: any = await inquirer.prompt([
     {

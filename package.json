@@ -27,7 +27,7 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@alicloud/fc20230330": "^2.0.0",
+    "@xi-liu/fc20230330": "^2.1.0",
     "@alicloud/pop-core": "^1.7.13",
     "@serverless-cd/srm-aliyun-fc-domain": "^0.0.1-beta.1",
     "@serverless-devs/component-interface": "^0.0.3-beta.1",

@@ -31,6 +31,18 @@ export default class ComponentRos {
           ],
         },
       },
+      info: {
+        help: {
+          description: 'get fc custom domain information',
+          summary: 'get fc custom domain information',
+        },
+      },
+      plan: {
+        help: {
+          description: 'show the differences between the local and remote',
+          summary: 'show the differences between the local and remote',
+        },
+      },
     };
   }
 

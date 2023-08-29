@@ -212,7 +212,7 @@ export class CustomDomain {
       );
     }
     const originCertConfig = _.get(this.getProps(), 'certConfig');
-    if (originCertConfig) {
+    if (originCertConfig && originCertConfig.certId === undefined) {
       if (
         !(
           'certName' in originCertConfig &&

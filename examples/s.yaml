@@ -60,7 +60,7 @@ resources:
         privateKey: oss://cn-huhehaote/serverless-devs-fc3-ci-test/xiliu-test.shoushuai.top.key
 
       # certConfig:
-      #   certId: test-cert
+      #   certId: 7246639
 
       # authConfig:
       #   authInfo: xxx

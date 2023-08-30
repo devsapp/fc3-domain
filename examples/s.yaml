@@ -7,12 +7,9 @@ resources:
     component: ${path("../")}
     props: #  组件的属性值
       region: cn-huhehaote
-      # domainName: test-serverless-devs-custom-domain-ci.fcv3.1431999136518149.cn-huhehaote.fc.devsapp.net
-      # protocol: HTTP,HTTPS # HTTP | HTTPS | HTTP,HTTPS
       # domainName: auto
-      # protocol: HTTP # HTTP | HTTPS | HTTP,HTTPS
       domainName: xiliu-test.shoushuai.top
-      protocol: HTTP,HTTPS
+      protocol: HTTP,HTTPS  # HTTP | HTTPS | HTTP,HTTPS
       routeConfig:
         routes:
           - functionName: test-serverless-devs-custom-domain-ci-1

@@ -48,36 +48,41 @@ Properties:
       - us-east-1
       - ap-south-1
 
-  name:
+  domainName:
     type: string
     required: true
-    description: Stack Name
+    description: domainName
 
-  parameters:
-    type: object
-    required: false
-    description: 模板中已定义的参数的名称和值
+  protocol:
+    type: string
+    required: true
+    description: 域名支持的协议类型
+    enum:
+      - HTTP
+      - HTTPS
+      - HTTP,HTTPS
 
-  template:
+  routeConfig:
     type: object
     required: true
-    description: ros template 语法， yaml 格式,  和 templateUri 参数必须2选1
+    description: 路由表：自定义域名访问时的PATH到Function的映射
 
-  policy:
+  certConfig:
     type: object
     required: false
-    description: Policy 配置
-    properties:
-      body:
-        type: string
-        required: false
-        examples:
-          [
-            '{"Statement":[{"Action":"Update:*","Resource":"*","Effect":"Allow","Principal":"*"}]}',
-          ]
-        description: 包含资源栈策略主体的结构，长度为1~16,384个字节。
-      url:
-        type: string
-        required: false
-        examples: ["oss://ros-stack-policy/demo"]
-        description: 包含资源栈策略的文件的位置。 URL必须指向位于Web服务器（HTTP或HTTPS）或阿里云OSS存储桶（例如：oss://ros/stack-policy/demo、oss://ros/stack-policy/demo?RegionId=cn-hangzhou）中的策略，策略文件最大长度为16,384个字节。 如未指定OSS地域，默认与接口参数RegionId相同。
+    description: HTTPS证书的信息
+
+  tlsConfig:
+    type: object
+    required: false
+    description: TLS配置信息
+
+  wafConfig:
+    type: object
+    required: false
+    description: Web应用防火墙配置信息
+
+  authConfig:
+    type: object
+    required: false
+    description: Auth配置信息

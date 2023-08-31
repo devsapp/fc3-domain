@@ -1,7 +1,7 @@
 import { IInputs } from '@serverless-devs/component-interface';
 import * as _ from 'lodash';
 import GLogger from '../common/logger';
-import * as $fc20230330 from '@xi-liu/fc20230330';
+import * as $fc20230330 from '@alicloud/fc20230330';
 import { ICredentials } from '@serverless-devs/component-interface';
 import { HttpsCertConfig, ICertConfig } from './https_cert_config';
 import AutoDomainGenerator from '@serverless-cd/srm-aliyun-fc-domain';

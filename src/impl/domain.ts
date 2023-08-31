@@ -1,7 +1,7 @@
 import { IInputs } from '@serverless-devs/component-interface';
 import * as _ from 'lodash';
 import GLogger from '../common/logger';
-import FCClient, * as $fc20230330 from '@xi-liu/fc20230330';
+import FCClient, * as $fc20230330 from '@alicloud/fc20230330';
 import * as $OpenApi from '@alicloud/openapi-client';
 import { ICredentials } from '@serverless-devs/component-interface';
 import { diffConvertPlanYaml, diffConvertYaml } from '@serverless-devs/diff';

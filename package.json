@@ -27,12 +27,12 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@xi-liu/fc20230330": "^2.1.0",
+    "@alicloud/fc20230330": "^3.0.0",
     "@alicloud/pop-core": "^1.7.13",
     "@serverless-cd/srm-aliyun-fc-domain": "^0.0.1-beta.1",
     "@serverless-devs/component-interface": "^0.0.3-beta.1",
     "@serverless-devs/diff": "^0.0.3-beta.6",
-    "@serverless-devs/utils": "^0.0.8-beta.6",
+    "@serverless-devs/utils": "^0.0.8-beta.18",
     "ali-oss": "^6.18.0",
     "inquirer": "^8.2.6",
     "lodash": "^4.17.21",

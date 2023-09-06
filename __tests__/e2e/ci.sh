@@ -30,8 +30,10 @@ s3 deploy -y --debug
 s3 info
 s3 plan
 
-# checkUrl "http://test-serverless-devs-custom-domain-ci.fcv3.1431999136518149.cn-huhehaote.fc.devsapp.net/a"
+sleep 3s
 
-# checkUrl "http://test-serverless-devs-custom-domain-ci-1.fcv3.1431999136518149.cn-huhehaote.fc.devsapp.net/b"
+checkUrl "http://test-serverless-devs-custom-domain-ci.fcv3.1431999136518149.cn-huhehaote.fc.devsapp.net/a"
+
+checkUrl "http://test-serverless-devs-custom-domain-ci-1.fcV3.1431999136518149.cn-huhehaote.fc.devsapp.net/b"
 
 s3 remove -y

@@ -30,7 +30,7 @@ s3 deploy -y --debug
 s3 info
 s3 plan
 
-sleep 3s
+sleep 1s
 
 checkUrl "http://test-serverless-devs-custom-domain-ci.fcv3.1431999136518149.cn-huhehaote.fc.devsapp.net/a"
 

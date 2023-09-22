@@ -146,6 +146,10 @@ export class Domain {
         await sleep(retryTime);
       }
     }
+
+    let r = await this.getCustomDomain();
+    _.unset(r, 'certConfig');
+    return r;
   }
 
   public async remove(): Promise<void> {

@@ -10,7 +10,7 @@ export async function resolveCname(domain: string, logger: any) {
     logger.debug(`${domain} is already CNAME  to ${cnameRecords}`);
     return true;
   } catch (error) {
-    logger.error(`Error resolving ${domain} CNAME: ${error.message}`);
+    logger.info(`can't resolving ${domain} CNAME: ${error.message}`);
   }
   return false;
 }

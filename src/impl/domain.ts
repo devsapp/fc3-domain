@@ -8,6 +8,7 @@ import { diffConvertPlanYaml, diffConvertYaml } from '@serverless-devs/diff';
 import { parseArgv } from '@serverless-devs/utils';
 import { promptForConfirmOrDetails, promptForConfirmOK, sleep } from './util';
 import { CustomDomain } from './custom_domain';
+import { IRegion, checkRegion } from './region';
 
 export enum FC_API_ERROR_CODE {
   DomainNameNotFound = 'DomainNameNotFound', // 自定义域名不存在
@@ -20,13 +21,28 @@ const FC_CLIENT_CONNECT_TIMEOUT: number =
 const FC_CLIENT_READ_TIMEOUT: number = parseInt(process.env.FC_CLIENT_READ_TIMEOUT || '10') * 1000;
 
 export class Domain {
-  region: string;
+  region: IRegion;
   readonly fc20230330Client: FCClient;
   yes: boolean = false;
   customDomain: CustomDomain;
 
-  constructor(readonly input: IInputs, readonly credentials: ICredentials) {
-    this.region = this.input.props.region;
+  constructor(readonly inputs: IInputs, readonly credentials: ICredentials) {
+    const opts = parseArgv(inputs.args, {
+      alias: { help: 'h', 'assume-yes': 'y' },
+      boolean: ['help', 'y'],
+      string: ['region', 'domain-name'],
+    });
+    this.region = opts.region || _.get(inputs, 'props.region');
+    checkRegion(this.region);
+
+    const domainName = opts['domain-name'] || _.get(inputs, 'props.domainName');
+    if (_.isEmpty(domainName)) {
+      throw new Error('domainName not specified, please specify --domain-name');
+    }
+
+    _.set(inputs, 'props.region', this.region);
+    _.set(inputs, 'props.domainName', domainName);
+
     const {
       AccountID: accountID,
       AccessKeyID: accessKeyId,
@@ -49,16 +65,9 @@ export class Domain {
     });
 
     this.fc20230330Client = new FCClient(config);
+    this.yes = !!opts.y;
 
-    const command = parseArgv(this.input.args, {
-      alias: {
-        yes: 'y',
-      },
-      boolean: ['yes'],
-    });
-    this.yes = !!command.y;
-
-    this.customDomain = new CustomDomain(input, credentials);
+    this.customDomain = new CustomDomain(inputs, credentials);
   }
 
   getProps = (): any => {
@@ -70,6 +79,7 @@ export class Domain {
   };
 
   public async deploy(): Promise<void> {
+    this.customDomain.checkPropsValid();
     const logger = GLogger.getLogger();
     await this.preDeploy();
 
@@ -163,6 +173,7 @@ export class Domain {
   }
 
   public async plan(): Promise<void> {
+    this.customDomain.checkPropsValid();
     await this.customDomain.tryHandleAutoDomain();
     const logger = GLogger.getLogger();
     const { remote, local } = await this.getLocalRemote();
@@ -290,7 +301,7 @@ ${customDomainConfig.show}
       createCustomDomainInput.wafConfig = this.customDomain.getWafConfig();
     }
     logger.debug(
-      `createCustomDomain input ==>\n${JSON.stringify(createCustomDomainInput.toMap())}`,
+      `createCustomDomain inputs ==>\n${JSON.stringify(createCustomDomainInput.toMap())}`,
     );
 
     let createCustomDomainRequest = new $fc20230330.CreateCustomDomainRequest({
@@ -323,7 +334,7 @@ ${customDomainConfig.show}
     }
 
     logger.debug(
-      `updateCustomDomain input ==>\n${JSON.stringify(updateCustomDomainInput.toMap())}`,
+      `updateCustomDomain inputs ==>\n${JSON.stringify(updateCustomDomainInput.toMap())}`,
     );
 
     let updateCustomDomainRequest = new $fc20230330.UpdateCustomDomainRequest({

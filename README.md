@@ -9,7 +9,7 @@
   - [Plan命令](#Plan命令)
   - [Info命令](#Info命令)
 
-## 测试
+## 快速使用
 
 1. 在本地创建`s.yaml`
 
@@ -20,7 +20,7 @@ access: quanxi #  秘钥别名
 
 resources:
   fc-domain-test: #  服务名称
-    component: domain
+    component: fc3-domain
     props: #  组件的属性值
       region: cn-huhehaote
       domainName: my.abc.com
@@ -50,7 +50,7 @@ access: quanxi #  秘钥别名
 
 resources:
   fc-domain-test:
-    component: domain
+    component: fc3-domain
     props: #  组件的属性值
       region: cn-huhehaote
       # domainName: auto
@@ -115,10 +115,10 @@ resources:
 
 其中针对 certConfig 可以支持如下四种方式：
 
-- 1.  本地文件形式
-- 2.  http url 形式 
+- 1. 本地文件形式
+- 2. http url 形式 
 - 3. oss object 地址形式
-- 4.  阿里云数字证书管理服务中的ssl证书 id
+- 4. 阿里云数字证书管理服务中的ssl证书 id
 
 ### 参数详情
 
@@ -154,12 +154,14 @@ resources:
 
 移除函数计算自定义域名
 
-| 参数全称   | 参数缩写 | Yaml 模式下必填 | 参数含义 |
-| ---------- | -------- | --------------- | -------------|
-| assume-yes | y        | 选填            | 在交互时，默认选择`y`|
-| access     | a        | 选填            | 本次请求使用的密钥，可以使用通过[config 命令](https://github.com/Serverless-Devs/Serverless-Devs/tree/master/docs/zh/command/config.md#config-add-命令) 配置的密钥信息，以及[配置到环境变量的密钥信息](https://github.com/Serverless-Devs/Serverless-Devs/tree/master/docs/zh/command/config.md#通过环境变量配置密钥信息) |
-| debug      | -        | 选填            | 打开`debug`模式，将会输出更多日志信息 |
-| help       | h        | 选填            | 查看帮助信息  |
+| 参数全称   | 参数缩写 | Yaml 模式下必填 | Cli 模式下必填 | 参数含义 |
+| ---------- | -------- | --------------- | --------------- | -------------|
+| region     | -        | 选填            | 必填            | 地区，取值范围请参考: [函数计算开服地域](https://www.alibabacloud.com/help/zh/fc/product-overview/region-availability) |
+| domain-name | -        | 选填            | 必填           | 自定义域名名字，比如 `myabc.com` |
+| assume-yes | y        | 选填            | 选填            |在交互时，默认选择`y`|
+| access     | a        | 选填            | 必填            |本次请求使用的密钥，可以使用通过[config 命令](https://github.com/Serverless-Devs/Serverless-Devs/tree/master/docs/zh/command/config.md#config-add-命令) 配置的密钥信息，以及[配置到环境变量的密钥信息](https://github.com/Serverless-Devs/Serverless-Devs/tree/master/docs/zh/command/config.md#通过环境变量配置密钥信息) |
+| debug      | -        | 选填            | 选填            |打开`debug`模式，将会输出更多日志信息 |
+| help       | h        | 选填            | 选填            |查看帮助信息  |
 
 ### Plan命令
 
@@ -176,8 +178,10 @@ resources:
 
 显示已经部署到线上的自定义域名配置信息
 
-| 参数全称   | 参数缩写 | Yaml 模式下必填 | 参数含义 |
-| ---------- | -------- | --------------- | ----------  |
-| access     | a        | 选填            | 本次请求使用的密钥，可以使用通过[config 命令](https://github.com/Serverless-Devs/Serverless-Devs/tree/master/docs/zh/command/config.md#config-add-命令) 配置的密钥信息，以及[配置到环境变量的密钥信息](https://github.com/Serverless-Devs/Serverless-Devs/tree/master/docs/zh/command/config.md#通过环境变量配置密钥信息) |
-| debug      | -        | 选填            | 打开`debug`模式，将会输出更多日志信息 |
-| help       | h        | 选填            | 查看帮助信息 |
+| 参数全称   | 参数缩写 | Yaml 模式下必填 | Cli 模式下必填 | 参数含义 |
+| ---------- | -------- | --------------- |  --------------- | ----------  |
+| region     | -        | 选填            | 必填            | 地区，取值范围请参考: [函数计算开服地域](https://www.alibabacloud.com/help/zh/fc/product-overview/region-availability) |
+| domain-name | -        | 选填            | 必填           | 自定义域名名字，比如 `myabc.com` |
+| access     | a        | 选填            | 必填            |本次请求使用的密钥，可以使用通过[config 命令](https://github.com/Serverless-Devs/Serverless-Devs/tree/master/docs/zh/command/config.md#config-add-命令) 配置的密钥信息，以及[配置到环境变量的密钥信息](https://github.com/Serverless-Devs/Serverless-Devs/tree/master/docs/zh/command/config.md#通过环境变量配置密钥信息) |
+| debug      | -        | 选填            | 选填            |打开`debug`模式，将会输出更多日志信息 |
+| help       | h        | 选填            | 选填            |查看帮助信息 |

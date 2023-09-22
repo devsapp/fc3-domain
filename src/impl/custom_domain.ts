@@ -8,17 +8,14 @@ import AutoDomainGenerator from '@serverless-cd/srm-aliyun-fc-domain';
 import { resolveCname } from './util';
 
 export class CustomDomain {
-  input: IInputs;
   region: string;
   yes: boolean;
   domainName: string;
 
-  constructor(input: IInputs, readonly credentials: ICredentials) {
-    this.input = input;
-    this.region = this.input.props.region;
-    _.unset(this.input.props, 'region');
+  constructor(readonly inputs: IInputs, readonly credentials: ICredentials) {
+    this.region = this.inputs.props.region;
+    _.unset(this.inputs.props, 'region');
     this.domainName = _.get(this.getProps(), 'domainName');
-    this.checkPropsValid();
   }
 
   public async tryHandleAutoDomain() {
@@ -69,7 +66,7 @@ export class CustomDomain {
   }
 
   public getProps(): any {
-    return this.input.props;
+    return this.inputs.props;
   }
 
   public getDomainName(): string {

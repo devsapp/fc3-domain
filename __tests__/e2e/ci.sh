@@ -3,7 +3,7 @@
 set -e
 set -v
 
-# export domain_component_version=domain@dev.0.1
+# export domain_component_version=fc3-domain@dev
 
 
 checkUrl(){

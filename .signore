@@ -18,7 +18,9 @@ package-lock.json
 
 README.md
 ./examples
-./test
+./__tests__
 ./Makefile
 ./f2elint.config.js
 ./commitlint.config.js
+.husky
+replace-committers.sh

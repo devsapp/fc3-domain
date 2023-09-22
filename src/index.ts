@@ -1,49 +1,13 @@
 import { IInputs } from '@serverless-devs/component-interface';
 import { Domain } from './impl/domain';
+import command_help from './impl/command_help';
 import GLogger from './common/logger';
 
 export default class ComponentRos {
   protected commands: any;
   constructor({ logger }: any) {
     GLogger.setLogger(logger || console);
-    this.commands = {
-      deploy: {
-        help: {
-          description: 'deploy fc custom domain',
-          summary: 'deploy fc custom domain',
-          option: [
-            [
-              '-y, --assume-yes',
-              'Assume that the answer to any question which would be asked is yes',
-            ],
-          ],
-        },
-      },
-      remove: {
-        help: {
-          description: 'remove fc custom domain',
-          summary: 'remove fc custom domain',
-          option: [
-            [
-              '-y, --assume-yes',
-              'Assume that the answer to any question which would be asked is yes',
-            ],
-          ],
-        },
-      },
-      info: {
-        help: {
-          description: 'get fc custom domain information',
-          summary: 'get fc custom domain information',
-        },
-      },
-      plan: {
-        help: {
-          description: 'show the differences between the local and remote',
-          summary: 'show the differences between the local and remote',
-        },
-      },
-    };
+    this.commands = command_help;
   }
 
   public async deploy(inputs: IInputs): Promise<void> {

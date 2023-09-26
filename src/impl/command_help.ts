@@ -4,7 +4,7 @@ export default {
       description: `deploy fc custom domain
 
 Examples:
-  $ s3 deploy -y`,
+  $ s deploy -y`,
       summary: 'deploy fc custom domain',
       option: [
         ['-y, --assume-yes', 'Assume that the answer to any question which would be asked is yes'],
@@ -16,11 +16,11 @@ Examples:
       description: `remove fc custom domain
 
 Examples with Yaml:
-  $ s3 remove
-  $ s3 remove -y
+  $ s remove
+  $ s remove -y
 
 Examples with CLI:
-  $ s3 cli fc3-domain remove --region cn-hangzhou --domain-name test -a default`,
+  $ s cli fc3-domain remove --region cn-hangzhou --domain-name test -a default`,
       summary: 'remove fc custom domain',
       option: [
         [
@@ -37,10 +37,10 @@ Examples with CLI:
       description: `get fc custom domain information
 
 Examples with Yaml:
-  $ s3 info
+  $ s info
 
 Examples with CLI:
-  $ s3 cli fc3-domain info --region cn-hangzhou --domain-name test -a default`,
+  $ s cli fc3-domain info --region cn-hangzhou --domain-name test -a default`,
       summary: 'get fc custom domain information',
       option: [
         [
@@ -56,7 +56,7 @@ Examples with CLI:
       description: `show the differences between the local and remote
 
 Examples:
-  $ s3 plan`,
+  $ s plan`,
       summary: 'show the differences between the local and remote',
     },
   },

@@ -28,8 +28,9 @@ export class CustomDomain {
     }
 
     // 取第一个 path 中的 functionName
-    const functionName = this.getProps()['routeConfig']['routes'][0]['functionName'];
+    let functionName = this.getProps()['routeConfig']['routes'][0]['functionName'];
     const userId = this.credentials.AccountID;
+    functionName = functionName.replace(/_/g, '-');
 
     let autoDomainName = `${functionName}.fcV3.${userId}.${this.region}.fc.devsapp.net`;
     const isResolve = await resolveCname(autoDomainName, logger);

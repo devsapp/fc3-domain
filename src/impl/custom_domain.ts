@@ -32,6 +32,17 @@ export class CustomDomain {
     const userId = this.credentials.AccountID;
     functionName = functionName.replace(/_/g, '-');
 
+    // 针对 cadt 场景的 restfulapi 示例特殊处理
+    if (
+      functionName === 'ListItems' ||
+      functionName === 'CreateItem' ||
+      functionName === 'GetItem' ||
+      functionName === 'UpdateItem' ||
+      functionName === 'DeleteItem'
+    ) {
+      functionName = 'items';
+    }
+
     let autoDomainName = `${functionName}.fcV3.${userId}.${this.region}.fc.devsapp.net`;
     const isResolve = await resolveCname(autoDomainName, logger);
     if (isResolve) {

@@ -43,7 +43,7 @@ export class CustomDomain {
       functionName = 'items';
     }
 
-    let autoDomainName = `${functionName}.fcV3.${userId}.${this.region}.fc.devsapp.net`;
+    let autoDomainName = `${functionName}.fcv3.${userId}.${this.region}.fc.devsapp.net`;
     const isResolve = await resolveCname(autoDomainName, logger);
     if (isResolve) {
       this.domainName = autoDomainName;
@@ -55,7 +55,7 @@ export class CustomDomain {
       type: 'fc',
       user: userId,
       region: this.region,
-      service: 'fcV3',
+      service: 'fcv3',
       function: functionName,
     };
     this.domainName = await AutoDomainGenerator.genDomain(params, this.credentials);

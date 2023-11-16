@@ -222,7 +222,7 @@ ${customDomainConfig.show}
       `\n* You can also specify to use local configuration through --yes/-y during deployment`,
     );
 
-    const message = `Deploy it with local config or skip deploy custom domain?`;
+    const message = `Deploy it with local config?`;
     this.yes = await promptForConfirmOK(message);
   }
 

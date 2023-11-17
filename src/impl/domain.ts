@@ -115,7 +115,9 @@ export class Domain {
           logger.debug(`Need create custom domain ${this.getDomainName()}`);
           try {
             await this.createCustomDomain();
-            return;
+            let r = await this.getCustomDomain();
+            _.unset(r, 'certConfig');
+            return r;
           } catch (ex) {
             logger.debug(`Create custom domain error: ${ex.message}`);
             if (ex.code !== FC_API_ERROR_CODE.DomainNameAlreadyExists) {

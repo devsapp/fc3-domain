@@ -59,5 +59,6 @@ Examples:
   $ s plan`,
       summary: 'show the differences between the local and remote',
     },
+    verify: false,
   },
 };

@@ -1,4 +1,4 @@
-import { IInputs } from '@serverless-devs/component-interface';
+import { IInputs } from '../interface/index';
 import * as _ from 'lodash';
 import GLogger from '../common/logger';
 import * as $fc20230330 from '@alicloud/fc20230330';

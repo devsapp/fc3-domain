@@ -1,9 +1,8 @@
-import { IInputs } from '@serverless-devs/component-interface';
+import { IInputs } from '../interface/index';
 import * as _ from 'lodash';
 import GLogger from '../common/logger';
 import FCClient, * as $fc20230330 from '@alicloud/fc20230330';
 import * as $OpenApi from '@alicloud/openapi-client';
-import { ICredentials } from '@serverless-devs/component-interface';
 import { diffConvertPlanYaml, diffConvertYaml } from '@serverless-devs/diff';
 import { parseArgv } from '@serverless-devs/utils';
 import { promptForConfirmOrDetails, promptForConfirmOK, sleep } from './util';
@@ -22,11 +21,10 @@ const FC_CLIENT_READ_TIMEOUT: number = parseInt(process.env.FC_CLIENT_READ_TIMEO
 
 export class Domain {
   region: IRegion;
-  readonly fc20230330Client: FCClient;
   yes: boolean = false;
   customDomain: CustomDomain;
 
-  constructor(readonly inputs: IInputs, readonly credentials: ICredentials) {
+  constructor(readonly inputs: IInputs) {
     const opts = parseArgv(inputs.args, {
       alias: { help: 'h', 'assume-yes': 'y' },
       boolean: ['help', 'y'],
@@ -43,16 +41,21 @@ export class Domain {
     _.set(inputs, 'props.region', this.region);
     _.set(inputs, 'props.domainName', domainName);
 
+    this.yes = !!opts.y;
+
+    this.customDomain = new CustomDomain(inputs, inputs.credential);
+  }
+
+  getFcClient(command: string): FCClient {
     const {
       AccountID: accountID,
       AccessKeyID: accessKeyId,
       AccessKeySecret: accessKeySecret,
       SecurityToken: securityToken,
-    } = credentials;
+    } = this.inputs.credential;
 
     const endpoint = `${accountID}.${this.region}.fc.aliyuncs.com`;
     const protocol = 'https';
-
     const config = new $OpenApi.Config({
       accessKeyId,
       accessKeySecret,
@@ -61,13 +64,12 @@ export class Domain {
       endpoint,
       readTimeout: FC_CLIENT_READ_TIMEOUT,
       connectTimeout: FC_CLIENT_CONNECT_TIMEOUT,
-      userAgent: 'serverless-devs',
+      userAgent: `${
+        this.inputs.userAgent ||
+        `Component:fc3-domain;Nodejs:${process.version};OS:${process.platform}-${process.arch}`
+      }command:${command}`,
     });
-
-    this.fc20230330Client = new FCClient(config);
-    this.yes = !!opts.y;
-
-    this.customDomain = new CustomDomain(inputs, credentials);
+    return new FCClient(config);
   }
 
   getProps = (): any => {
@@ -89,7 +91,7 @@ export class Domain {
     }
     let needUpdate = false;
     try {
-      await this.getCustomDomain();
+      await this.getCustomDomain('deploy');
       needUpdate = true;
     } catch (err) {
       if (err.code !== FC_API_ERROR_CODE.DomainNameNotFound) {
@@ -115,7 +117,7 @@ export class Domain {
           logger.debug(`Need create custom domain ${this.getDomainName()}`);
           try {
             await this.createCustomDomain();
-            let r = await this.getCustomDomain();
+            let r = await this.getCustomDomain('deploy');
             _.unset(r, 'certConfig');
             return r;
           } catch (ex) {
@@ -149,7 +151,7 @@ export class Domain {
       }
     }
 
-    let r = await this.getCustomDomain();
+    let r = await this.getCustomDomain('deploy');
     _.unset(r, 'certConfig');
     return r;
   }
@@ -159,21 +161,22 @@ export class Domain {
     const logger = GLogger.getLogger();
     logger.write(`Remove custom domain: ${this.getDomainName()}`);
     console.log();
+    const client = this.getFcClient('remove');
     if (this.yes) {
-      await this.fc20230330Client.deleteCustomDomain(this.getDomainName());
+      await client.deleteCustomDomain(this.getDomainName());
       logger.debug(`delete custom domain ${(this, this.getDomainName())} success`);
       return;
     }
     const msg = `Do you want to delete this custom domain ${this.getDomainName()}`;
     if (await promptForConfirmOrDetails(msg)) {
-      await this.fc20230330Client.deleteCustomDomain(this.getDomainName());
+      await client.deleteCustomDomain(this.getDomainName());
       logger.debug(`delete custom domain ${(this, this.getDomainName())} success`);
     }
   }
 
   public async info(): Promise<any> {
     await this.customDomain.tryHandleAutoDomain();
-    let r = await this.getCustomDomain();
+    let r = await this.getCustomDomain('info');
     _.unset(r, 'certConfig');
     return r;
   }
@@ -182,7 +185,7 @@ export class Domain {
     this.customDomain.checkPropsValid();
     await this.customDomain.tryHandleAutoDomain();
     const logger = GLogger.getLogger();
-    const { remote, local } = await this.getLocalRemote();
+    const { remote, local } = await this.getLocalRemote('plan');
     const customDomainConfig = diffConvertPlanYaml(remote, local, { deep: 1, complete: true });
 
     let showDiff = `
@@ -196,7 +199,7 @@ ${customDomainConfig.show}
   private async preDeploy(): Promise<void> {
     const logger = GLogger.getLogger();
     await this.customDomain.tryHandleAutoDomain();
-    const { remote, local } = await this.getLocalRemote();
+    const { remote, local } = await this.getLocalRemote('deploy');
     if (!remote) {
       // remote 不存在
       this.yes = true;
@@ -228,11 +231,11 @@ ${customDomainConfig.show}
     this.yes = await promptForConfirmOK(message);
   }
 
-  private async getLocalRemote(): Promise<any> {
+  private async getLocalRemote(command: string): Promise<any> {
     const logger = GLogger.getLogger();
     let remote = {};
     try {
-      remote = await this.getCustomDomain();
+      remote = await this.getCustomDomain(command);
     } catch (ex) {
       logger.debug(`Get remote custom domain config error: ${ex.message}`);
       if (ex.code === FC_API_ERROR_CODE.DomainNameNotFound) {
@@ -263,9 +266,9 @@ ${customDomainConfig.show}
     return { remote, local };
   }
 
-  private async getCustomDomain(): Promise<any> {
+  private async getCustomDomain(command: string): Promise<any> {
     //const logger = GLogger.getLogger();
-    const result = await this.fc20230330Client.getCustomDomain(this.getDomainName());
+    const result = await this.getFcClient(command).getCustomDomain(this.getDomainName());
     const body = result.toMap().body;
 
     if (_.isEmpty(body.tlsConfig)) {
@@ -313,7 +316,7 @@ ${customDomainConfig.show}
     let createCustomDomainRequest = new $fc20230330.CreateCustomDomainRequest({
       body: createCustomDomainInput,
     });
-    await this.fc20230330Client.createCustomDomain(createCustomDomainRequest);
+    await this.getFcClient('deploy').createCustomDomain(createCustomDomainRequest);
     logger.debug(`createCustomDomain ${this.getDomainName()} success`);
   }
 
@@ -346,7 +349,10 @@ ${customDomainConfig.show}
     let updateCustomDomainRequest = new $fc20230330.UpdateCustomDomainRequest({
       body: updateCustomDomainInput,
     });
-    await this.fc20230330Client.updateCustomDomain(this.getDomainName(), updateCustomDomainRequest);
+    await this.getFcClient('deploy').updateCustomDomain(
+      this.getDomainName(),
+      updateCustomDomainRequest,
+    );
     logger.debug(`updateCustomDomain ${this.getDomainName()} success`);
   }
 }

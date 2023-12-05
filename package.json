@@ -33,7 +33,7 @@
     "@serverless-cd/srm-aliyun-fc-domain": "^0.0.1-beta.1",
     "@serverless-devs/component-interface": "^0.0.3-beta.1",
     "@serverless-devs/diff": "^0.0.3-beta.6",
-    "@serverless-devs/utils": "^0.0.8-beta.18",
+    "@serverless-devs/utils": "^0.0.14",
     "ali-oss": "^6.18.0",
     "inquirer": "^8.2.6",
     "lodash": "^4.17.21",

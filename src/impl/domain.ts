@@ -96,7 +96,9 @@ export class Domain {
     } catch (err) {
       if (err.code !== FC_API_ERROR_CODE.DomainNameNotFound) {
         logger.debug(
-          `Checking domain ${this.getDomainName()} error: ${err.message}, retrying create`,
+          `Checking domain ${this.region}/${this.getDomainName()} error: ${
+            err.message
+          }, retrying create`,
         );
       }
     }
@@ -114,7 +116,7 @@ export class Domain {
     while (true) {
       try {
         if (!needUpdate) {
-          logger.debug(`Need create custom domain ${this.getDomainName()}`);
+          logger.debug(`Need create custom domain ${this.region}/${this.getDomainName()}`);
           try {
             await this.createCustomDomain();
             let r = await this.getCustomDomain('deploy');
@@ -129,7 +131,7 @@ export class Domain {
             needUpdate = true;
           }
         }
-        logger.debug(`Update custom domain ${this.getDomainName()} ...`);
+        logger.debug(`Update custom domain ${this.region}/${this.getDomainName()} ...`);
         await this.updateCustomDomain();
         break;
       } catch (ex) {
@@ -159,18 +161,18 @@ export class Domain {
   public async remove(): Promise<void> {
     await this.customDomain.tryHandleAutoDomain();
     const logger = GLogger.getLogger();
-    logger.write(`Remove custom domain: ${this.getDomainName()}`);
+    logger.write(`Remove custom domain: ${this.region}/${this.getDomainName()}`);
     console.log();
     const client = this.getFcClient('remove');
     if (this.yes) {
       await client.deleteCustomDomain(this.getDomainName());
-      logger.debug(`delete custom domain ${(this, this.getDomainName())} success`);
+      logger.debug(`delete custom domain ${this.region}/${this.getDomainName()} success`);
       return;
     }
-    const msg = `Do you want to delete this custom domain ${this.getDomainName()}`;
+    const msg = `Do you want to delete this custom domain ${this.region}/${this.getDomainName()}`;
     if (await promptForConfirmOrDetails(msg)) {
       await client.deleteCustomDomain(this.getDomainName());
-      logger.debug(`delete custom domain ${(this, this.getDomainName())} success`);
+      logger.debug(`delete custom domain ${this.region}/${this.getDomainName()} success`);
     }
   }
 
@@ -317,7 +319,7 @@ ${customDomainConfig.show}
       body: createCustomDomainInput,
     });
     await this.getFcClient('deploy').createCustomDomain(createCustomDomainRequest);
-    logger.debug(`createCustomDomain ${this.getDomainName()} success`);
+    logger.debug(`createCustomDomain ${this.region}/${this.getDomainName()} success`);
   }
 
   private async updateCustomDomain(): Promise<void> {
@@ -353,6 +355,6 @@ ${customDomainConfig.show}
       this.getDomainName(),
       updateCustomDomainRequest,
     );
-    logger.debug(`updateCustomDomain ${this.getDomainName()} success`);
+    logger.debug(`updateCustomDomain ${this.region}/${this.getDomainName()} success`);
   }
 }

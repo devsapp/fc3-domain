@@ -25,7 +25,8 @@
     "prebuild": "rimraf dist && npm run format &&  rimraf node_modules && npm i",
     "build": "esbuild src/index.ts --bundle --log-level=error --external:proxy-agent --minify --platform=node --format=cjs --target=node10.4  --outfile=dist/index.js",
     "prepare": "husky install",
-    "postinstall": "curl -sS http://images.devsapp.cn/pop-sdk/fix-sdk.sh | bash"
+    "postinstall": "curl -sS http://images.devsapp.cn/pop-sdk/fix-sdk.sh | bash",
+    "publish": "rimraf dist && npm i && npm run build && s registry publish"
   },
   "dependencies": {
     "@alicloud/fc20230330": "^3.0.0",

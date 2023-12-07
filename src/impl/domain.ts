@@ -188,14 +188,12 @@ export class Domain {
     await this.customDomain.tryHandleAutoDomain();
     const logger = GLogger.getLogger();
     const { remote, local } = await this.getLocalRemote('plan');
-    const customDomainConfig = diffConvertPlanYaml(remote, local, { deep: 1, complete: true });
+    const customDomainConfig = diffConvertPlanYaml(remote, local, { deep: 0, complete: true });
 
-    let showDiff = `
-region: ${this.region}
-function:
-${customDomainConfig.show}
-`;
-    logger.write(showDiff);
+    let showDiff = `region: ${this.region}\n${customDomainConfig.show}`;
+    showDiff = showDiff.replace(/^/gm, '    ');
+
+    logger.write(`${this.inputs.resource.name}:\n${showDiff}`);
   }
 
   private async preDeploy(): Promise<void> {

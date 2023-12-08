@@ -2,6 +2,8 @@ import { IInputs } from './interface/index';
 import { Domain } from './impl/domain';
 import command_help from './impl/command_help';
 import GLogger from './common/logger';
+import * as fs from 'fs';
+import path from 'path';
 
 export default class ComponentRos {
   protected commands: any;
@@ -40,5 +42,10 @@ export default class ComponentRos {
     inputs.credential = credential;
     const domainObj = new Domain(inputs);
     return await domainObj.plan();
+  }
+
+  public async getSchema(inputs: IInputs) {
+    const SCHEMA_FILE_PATH = path.join(__dirname, 'schema.json');
+    return fs.readFileSync(SCHEMA_FILE_PATH, 'utf-8');
   }
 }

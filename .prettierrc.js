@@ -6,5 +6,5 @@ module.exports = {
   "trailingComma": "all", // 多行时尽可能打印尾随逗号
   "bracketSpacing": true, // 在对象前后添加空格 eg: { foo: bar }
   "arrowParens": "always", // 单参数箭头函数参数周围使用圆括号 eg: (x) => x
-  "parser": "typescript"
+  //"parser": "typescript"
 }

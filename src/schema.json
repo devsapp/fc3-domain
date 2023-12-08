@@ -1,0 +1,260 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "definitions": {
+    "IRegion": {
+      "enum": [
+        "ap-northeast-1",
+        "ap-northeast-2",
+        "ap-south-1",
+        "ap-southeast-1",
+        "ap-southeast-2",
+        "ap-southeast-3",
+        "ap-southeast-5",
+        "ap-southeast-7",
+        "cn-beijing",
+        "cn-chengdu",
+        "cn-hangzhou",
+        "cn-hongkong",
+        "cn-huhehaote",
+        "cn-qingdao",
+        "cn-shanghai",
+        "cn-shenzhen",
+        "cn-zhangjiakou",
+        "eu-central-1",
+        "eu-west-1",
+        "us-east-1",
+        "us-west-1"
+      ],
+      "type": "string",
+      "default": "cn-hangzhou"
+    },
+    "ICertConfig": {
+      "anyOf": [
+        {
+          "properties": {
+            "certName": {
+              "type": "string"
+            },
+            "certificate": {
+              "type": "string"
+            },
+            "privateKey": {
+              "type": "string"
+            }
+          },
+          "required": ["certName", "certificate", "privateKey"],
+          "type": "object"
+        },
+        {
+          "properties": {
+            "certId": {
+              "type": "string"
+            }
+          },
+          "required": ["certId"],
+          "type": "object"
+        }
+      ]
+    },
+    "IWafConfig": {
+      "properties": {
+        "enableWAF": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": ["enableWAF"],
+      "type": "object"
+    },
+    "ITLSConfig": {
+      "properties": {
+        "minVersion": {
+          "type": "string",
+          "enum": ["TLSv1.0", "TLSv1.1", "TLSv1.2", "TLSv1.3"],
+          "default": "TLSv1.0"
+        },
+        "maxVersion": {
+          "type": "string",
+          "enum": ["TLSv1.0", "TLSv1.1", "TLSv1.2", "TLSv1.3"],
+          "default": "TLSv1.3"
+        },
+        "cipherSuites": {
+          "items": {
+            "enum": [
+              "TLS_RSA_WITH_RC4_128_SHA",
+              "TLS_RSA_WITH_3DES_EDE_CBC_SHA",
+              "TLS_RSA_WITH_AES_128_CBC_SHA",
+              "TLS_RSA_WITH_AES_256_CBC_SHA",
+              "TLS_RSA_WITH_AES_128_CBC_SHA256",
+              "TLS_RSA_WITH_AES_128_GCM_SHA256",
+              "TLS_RSA_WITH_AES_256_GCM_SHA384",
+              "TLS_ECDHE_ECDSA_WITH_RC4_128_SHA",
+              "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
+              "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA",
+              "TLS_ECDHE_RSA_WITH_RC4_128_SHA",
+              "TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA",
+              "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
+              "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
+              "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
+              "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+              "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+              "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+              "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+              "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+              "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305",
+              "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305"
+            ],
+            "type": "string",
+            "default": "TLS_RSA_WITH_RC4_128_SHA"
+          },
+          "type": "array",
+          "default": [
+            "TLS_RSA_WITH_RC4_128_SHA",
+            "TLS_RSA_WITH_3DES_EDE_CBC_SHA",
+            "TLS_RSA_WITH_AES_128_CBC_SHA",
+            "TLS_RSA_WITH_AES_256_CBC_SHA",
+            "TLS_RSA_WITH_AES_128_CBC_SHA256",
+            "TLS_RSA_WITH_AES_128_GCM_SHA256",
+            "TLS_RSA_WITH_AES_256_GCM_SHA384",
+            "TLS_ECDHE_ECDSA_WITH_RC4_128_SHA",
+            "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA",
+            "TLS_ECDHE_ECDSA_WITH_AES_256_CBC_SHA",
+            "TLS_ECDHE_RSA_WITH_RC4_128_SHA",
+            "TLS_ECDHE_RSA_WITH_3DES_EDE_CBC_SHA",
+            "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA",
+            "TLS_ECDHE_RSA_WITH_AES_256_CBC_SHA",
+            "TLS_ECDHE_ECDSA_WITH_AES_128_CBC_SHA256",
+            "TLS_ECDHE_RSA_WITH_AES_128_CBC_SHA256",
+            "TLS_ECDHE_RSA_WITH_AES_128_GCM_SHA256",
+            "TLS_ECDHE_ECDSA_WITH_AES_128_GCM_SHA256",
+            "TLS_ECDHE_RSA_WITH_AES_256_GCM_SHA384",
+            "TLS_ECDHE_ECDSA_WITH_AES_256_GCM_SHA384",
+            "TLS_ECDHE_RSA_WITH_CHACHA20_POLY1305",
+            "TLS_ECDHE_ECDSA_WITH_CHACHA20_POLY1305"
+          ]
+        }
+      },
+      "required": ["minVersion", "maxVersion", "cipherSuites"],
+      "type": "object"
+    },
+    "IRouteConfig": {
+      "properties": {
+        "routes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/IPathConfig"
+          }
+        }
+      },
+      "required": ["routes"],
+      "type": "object"
+    },
+    "IPathConfig": {
+      "properties": {
+        "functionName": {
+          "type": "string",
+          "default": "my-func"
+        },
+        "path": {
+          "type": "string",
+          "default": "/*"
+        },
+        "qualifier": {
+          "type": "string",
+          "default": "LATEST"
+        },
+        "methods": {
+          "items": {
+            "enum": ["DELETE", "GET", "HEAD", "OPTIONS", "PATCH", "POST", "PUT"],
+            "type": "string"
+          },
+          "type": "array"
+        },
+        "rewriteConfig": {
+          "$ref": "#/definitions/IRewriteConfig"
+        }
+      },
+      "required": ["functionName", "path"],
+      "type": "object"
+    },
+    "IRewriteConfig": {
+      "properties": {
+        "equalRules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/IRules"
+          }
+        },
+        "regexRules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/IRules"
+          }
+        },
+        "wildcardRules": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "$ref": "#/definitions/IRules"
+          }
+        }
+      },
+      "type": "object"
+    },
+    "IRules": {
+      "type": "object",
+      "properties": {
+        "match": {
+          "type": "string"
+        },
+        "replacement": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "properties": {
+    "region": {
+      "$ref": "#/definitions/IRegion"
+    },
+    "domainName": {
+      "type": "string",
+      "default": "auto"
+    },
+    "protocol": {
+      "type": "string",
+      "enum": ["HTTP", "HTTPS", "HTTP,HTTPS"],
+      "default": "HTTP"
+    },
+    "routeConfig": {
+      "$ref": "#/definitions/IRouteConfig"
+    },
+    "certConfig": {
+      "$ref": "#/definitions/ICertConfig"
+    },
+    "wafConfig": {
+      "$ref": "#/definitions/IWafConfig"
+    },
+    "tlsConfig": {
+      "$ref": "#/definitions/ITLSConfig"
+    },
+    "authConfig": {
+      "properties": {
+        "authInfo": {
+          "type": "string"
+        },
+        "authType": {
+          "type": "string",
+          "enum": ["jwt", "function", "anonymous"]
+        }
+      },
+      "required": ["authType"],
+      "type": "object"
+    }
+  },
+  "required": ["region", "domainName", "protocol", "routeConfig"]
+}

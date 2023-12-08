@@ -19,10 +19,11 @@
     "Function Compute"
   ],
   "scripts": {
-    "start": "npm run watch",
+    "prewatch": "mkdir -p dist && cp src/schema.json dist/schema.json",
     "watch": "tsc -w",
+    "start": "npm run watch",
     "format": "prettier --write src/",
-    "prebuild": "rimraf dist && npm run format &&  rimraf node_modules && npm i",
+    "prebuild": "rimraf dist && npm run format &&  rimraf node_modules && npm i && mkdir -p dist && cp src/schema.json dist/schema.json",
     "build": "esbuild src/index.ts --bundle --log-level=error --external:proxy-agent --minify --platform=node --format=cjs --target=node10.4  --outfile=dist/index.js",
     "prepare": "husky install",
     "postinstall": "curl -sS http://images.devsapp.cn/pop-sdk/fix-sdk.sh | bash",

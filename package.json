@@ -30,7 +30,7 @@
     "publish": "rimraf dist && npm i && npm run build && s registry publish"
   },
   "dependencies": {
-    "@alicloud/fc20230330": "^3.0.2",
+    "@alicloud/fc20230330": "^3.0.3",
     "@alicloud/pop-core": "^1.7.13",
     "@serverless-cd/srm-aliyun-fc-domain": "^0.0.1-beta.3",
     "@serverless-devs/component-interface": "^0.0.3-beta.1",

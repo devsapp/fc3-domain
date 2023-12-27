@@ -4,13 +4,20 @@ import inquirer from 'inquirer';
 
 const resolveCnameAsync = promisify(dns.resolveCname);
 
-export async function resolveCname(domain: string, logger: any) {
+export async function resolveCname(domain: string, expectedRecord: string, logger: any) {
   try {
+    let ret = false;
     const cnameRecords = await resolveCnameAsync(domain);
-    logger.debug(`${domain} is already CNAME  to ${cnameRecords}`);
-    return true;
+    for (const i in cnameRecords) {
+      if (cnameRecords[i] === expectedRecord) {
+        ret = true;
+        break;
+      }
+    }
+    logger.debug(`${domain} is already CNAME  to ${cnameRecords}, ret = ${ret}`);
+    return ret;
   } catch (error) {
-    logger.info(`can't resolving ${domain} CNAME: ${error.message}`);
+    logger.info(`can't resolving ${domain} CNAME to ${expectedRecord}, details: ${error.message}`);
   }
   return false;
 }

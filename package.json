@@ -23,9 +23,9 @@
     "watch": "tsc -w",
     "start": "npm run watch",
     "format": "prettier --write src/",
-    "prebuild": "rimraf dist && npm run format &&  rimraf node_modules && npm i && mkdir -p dist && cp src/schema.json dist/schema.json",
+    "prebuild": "rimraf dist && mkdir -p dist && cp src/schema.json dist/schema.json",
     "build": "esbuild src/index.ts --bundle --log-level=error --external:proxy-agent --minify --platform=node --format=cjs --target=node10.4  --outfile=dist/index.js",
-    "publish": "rimraf dist && npm i && npm run build && s registry publish"
+    "publish": "npm i && npm run build && s registry publish"
   },
   "dependencies": {
     "@alicloud/fc20230330": "^3.0.3",

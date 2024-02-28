@@ -1,4 +1,4 @@
-**注意：** 建议您直接阅读 [fc3 组件官方文档](https://manual.serverless-devs.com/user-guide/aliyun/#fc3-domain)
+**注意：** 建议您直接阅读 [fc3-domain 组件官方文档](https://manual.serverless-devs.com/user-guide/aliyun/#fc3-domain)
 
 通过该组件，快速部署函数计算自定义域名
 

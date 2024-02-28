@@ -1,13 +1,15 @@
+**注意：** 建议您直接阅读 [fc3 组件官方文档](https://manual.serverless-devs.com/user-guide/aliyun/#fc3-domain)
+
 通过该组件，快速部署函数计算自定义域名
 
 - [快速使用](#快速使用)
 - [完整配置](#完整配置)
   - [参数详情](#参数详情)
 - [命令相关](#命令相关)
-  - [Deploy命令](#Deploy命令)
-  - [Remove命令](#Remove命令)
-  - [Plan命令](#Plan命令)
-  - [Info命令](#Info命令)
+  - [Deploy命令](#deploy命令)
+  - [Remove命令](#remove命令)
+  - [Plan命令](#plan命令)
+  - [Info命令](#info命令)
 
 ## 快速使用
 
@@ -155,10 +157,14 @@ resources:
 
 ## 命令相关
 
-- [Deploy命令](#Deploy命令)
-- [Remove命令](#Remove命令)
-- [Plan命令](#Plan命令)
-- [Info命令](#Info命令)
+- [快速使用](#快速使用)
+- [完整配置](#完整配置)
+  - [参数详情](#参数详情)
+- [命令相关](#命令相关)
+  - [Deploy命令](#deploy命令)
+  - [Remove命令](#remove命令)
+  - [Plan命令](#plan命令)
+  - [Info命令](#info命令)
 
 <a id="Deploy命令"></a>
 ### Deploy命令

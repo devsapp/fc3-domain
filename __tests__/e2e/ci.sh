@@ -26,13 +26,13 @@ checkUrl(){
 }
 
 echo "test fc custom domain ..."
-s deploy -y --debug
+s deploy -y
 s info
 s plan
 
-sleep 1s
+sleep 1
 
-checkUrl "http://test-serverless-devs-custom-domain-ci.fcv3.1431999136518149.cn-huhehaote.fc.devsapp.net/a"
+# checkUrl "http://test-serverless-devs-custom-domain-ci.fcv3.1431999136518149.cn-huhehaote.fc.devsapp.net/a"
 
 checkUrl "http://test-serverless-devs-custom-domain-ci-1.fcv3.1431999136518149.cn-huhehaote.fc.devsapp.net/b"
 

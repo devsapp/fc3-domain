@@ -31,6 +31,7 @@ Examples with CLI:
         ['-y, --assume-yes', 'Assume that the answer to any question which would be asked is yes'],
       ],
     },
+    verify: false,
   },
   info: {
     help: {

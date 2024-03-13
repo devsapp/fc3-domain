@@ -14,6 +14,7 @@ update-version:
 	patch_version=$$(echo $$current_version | cut -d"." -f3); \
 	new_patch_version=$$((patch_version + 1)); \
 	new_version=$$major_version.$$minor_version.$$new_patch_version; \
+	echo $$new_version;\
 	sed -i "s/^Version: .*/Version: $$new_version/" publish.yaml; \
 	git diff --exit-code || true
 

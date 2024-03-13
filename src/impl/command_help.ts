@@ -25,7 +25,7 @@ Examples with CLI:
       option: [
         [
           '--region <region>',
-          '[C-Required] Specify the fc region, you can see all supported regions in https://www.alibabacloud.com/help/zh/fc/product-overview/region-availability',
+          '[C-Required] Specify the fc region, you can see all supported regions in https://help.aliyun.com/document_detail/2512917.html',
         ],
         ['--domain-name <domainName>', '[C-Required] Specify domain name'],
         ['-y, --assume-yes', 'Assume that the answer to any question which would be asked is yes'],
@@ -46,7 +46,7 @@ Examples with CLI:
       option: [
         [
           '--region <region>',
-          '[C-Required] Specify the fc region, you can see all supported regions in https://www.alibabacloud.com/help/zh/fc/product-overview/region-availability',
+          '[C-Required] Specify the fc region, you can see all supported regions in https://help.aliyun.com/document_detail/2512917.html',
         ],
         ['--domain-name <domainName>', '[C-Required] Specify domain name'],
       ],

@@ -1,7 +1,13 @@
-**注意：** 建议您直接阅读 [fc3-domain 组件官方文档](https://manual.serverless-devs.com/user-guide/aliyun/#fc3-domain)
+## 前言
+
+**注意：建议您直接阅读 [fc3-domain 组件官方文档](https://manual.serverless-devs.com/user-guide/aliyun/#fc3-domain)**
+
+## 简述
 
 通过该组件，快速部署函数计算自定义域名
 
+- [前言](#前言)
+- [简述](#简述)
 - [快速使用](#快速使用)
 - [完整配置](#完整配置)
   - [参数详情](#参数详情)
@@ -157,6 +163,8 @@ resources:
 
 ## 命令相关
 
+- [前言](#前言)
+- [简述](#简述)
 - [快速使用](#快速使用)
 - [完整配置](#完整配置)
   - [参数详情](#参数详情)
@@ -186,7 +194,7 @@ resources:
 
 | 参数全称   | 参数缩写 | Yaml 模式下必填 | Cli 模式下必填 | 参数含义 |
 | ---------- | -------- | --------------- | --------------- | -------------|
-| region     | -        | 选填            | 必填            | 地区，取值范围请参考: [函数计算开服地域](https://www.alibabacloud.com/help/zh/fc/product-overview/region-availability) |
+| region     | -        | 选填            | 必填            | 地区，取值范围请参考: [函数计算开服地域](https://help.aliyun.com/document_detail/2512917.html) |
 | domain-name | -        | 选填            | 必填           | 自定义域名名字，比如 `myabc.com` |
 | assume-yes | y        | 选填            | 选填            |在交互时，默认选择`y`|
 | access     | a        | 选填            | 必填            |本次请求使用的密钥，可以使用通过[config 命令](https://github.com/Serverless-Devs/Serverless-Devs/tree/master/docs/zh/command/config.md#config-add-命令) 配置的密钥信息，以及[配置到环境变量的密钥信息](https://github.com/Serverless-Devs/Serverless-Devs/tree/master/docs/zh/command/config.md#通过环境变量配置密钥信息) |
@@ -213,7 +221,7 @@ resources:
 
 | 参数全称   | 参数缩写 | Yaml 模式下必填 | Cli 模式下必填 | 参数含义 |
 | ---------- | -------- | --------------- |  --------------- | ----------  |
-| region     | -        | 选填            | 必填            | 地区，取值范围请参考: [函数计算开服地域](https://www.alibabacloud.com/help/zh/fc/product-overview/region-availability) |
+| region     | -        | 选填            | 必填            | 地区，取值范围请参考: [函数计算开服地域](https://help.aliyun.com/document_detail/2512917.html) |
 | domain-name | -        | 选填            | 必填           | 自定义域名名字，比如 `myabc.com` |
 | access     | a        | 选填            | 必填            |本次请求使用的密钥，可以使用通过[config 命令](https://github.com/Serverless-Devs/Serverless-Devs/tree/master/docs/zh/command/config.md#config-add-命令) 配置的密钥信息，以及[配置到环境变量的密钥信息](https://github.com/Serverless-Devs/Serverless-Devs/tree/master/docs/zh/command/config.md#通过环境变量配置密钥信息) |
 | debug      | -        | 选填            | 选填            |打开`debug`模式，将会输出更多日志信息 |

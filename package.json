@@ -25,16 +25,18 @@
     "format": "prettier --write src/",
     "prebuild": "rimraf dist && mkdir -p dist && cp src/schema.json dist/schema.json",
     "build": "esbuild src/index.ts --bundle --log-level=error --external:proxy-agent --minify --platform=node --format=cjs --target=node10.4  --outfile=dist/index.js",
-    "publish": "npm i && npm run build && s registry publish"
+    "publish": "npm i && npm run build && s registry publish",
+    "test": "jest --config jestconfig.json",
+    "postinstall": "patch-package"
   },
   "dependencies": {
     "@alicloud/fc20230330": "^3.0.3",
     "@alicloud/pop-core": "^1.7.13",
     "@serverless-cd/srm-aliyun-fc-domain": "^0.0.1-beta.4",
-    "@serverless-devs/component-interface": "^0.0.3-beta.1",
+    "@serverless-devs/component-interface": "^0.0.4",
     "@serverless-devs/diff": "^0.0.3-beta.6",
     "@serverless-devs/utils": "^0.0.14",
-    "ali-oss": "^6.18.1",
+    "ali-oss": "^6.20.0",
     "inquirer": "^8.2.6",
     "lodash": "^4.17.21",
     "node-fetch": "^2.6.9",
@@ -43,10 +45,16 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.12",
+    "@types/mocha": "^10.0.6",
     "@types/node": "^14.0.23",
     "esbuild": "^0.13.8",
+    "jest": "^29.7.0",
+    "patch-package": "^8.0.0",
+    "postinstall-prepare": "^2.0.0",
     "prettier": "^2.8.4",
     "rimraf": "^3.0.2",
+    "ts-jest": "^29.1.2",
     "ts-node": "^8.10.2",
     "typescript": "^4.4.2"
   }

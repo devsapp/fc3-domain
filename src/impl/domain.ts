@@ -1,5 +1,8 @@
 import { IInputs } from '../interface/index';
 import * as _ from 'lodash';
+import fs from 'fs';
+import path from 'path';
+import yaml from 'js-yaml';
 import GLogger from '../common/logger';
 import FCClient, * as $fc20230330 from '@alicloud/fc20230330';
 import * as $OpenApi from '@alicloud/openapi-client';
@@ -23,12 +26,13 @@ export class Domain {
   region: IRegion;
   yes: boolean = false;
   customDomain: CustomDomain;
+  private target: string;
 
   constructor(readonly inputs: IInputs) {
     const opts = parseArgv(inputs.args, {
       alias: { help: 'h', 'assume-yes': 'y' },
       boolean: ['help', 'y'],
-      string: ['region', 'domain-name'],
+      string: ['region', 'domain-name', 'target-dir'],
     });
     this.region = opts.region || _.get(inputs, 'props.region');
     checkRegion(this.region);
@@ -37,6 +41,11 @@ export class Domain {
     if (_.isEmpty(domainName)) {
       throw new Error('domainName not specified, please specify --domain-name');
     }
+    const target = opts['target-dir'];
+    if (fs.existsSync(target) && !fs.statSync(target).isDirectory()) {
+      throw new Error(`--target-dir "${target}" exists, but is not a directory`);
+    }
+    this.target = target;
 
     _.set(inputs, 'props.region', this.region);
     _.set(inputs, 'props.domainName', domainName);
@@ -153,8 +162,14 @@ export class Domain {
       }
     }
 
-    let r = await this.getCustomDomain('deploy');
-    _.unset(r, 'certConfig');
+    const c = await this.getCustomDomain('deploy');
+    _.unset(c, 'certConfig');
+    const r = _.merge(
+      {
+        region: this.region,
+      },
+      c,
+    );
     return r;
   }
 
@@ -178,8 +193,14 @@ export class Domain {
 
   public async info(): Promise<any> {
     await this.customDomain.tryHandleAutoDomain();
-    let r = await this.getCustomDomain('info');
-    _.unset(r, 'certConfig');
+    const c = await this.getCustomDomain('info');
+    _.unset(c, 'certConfig');
+    const r = _.merge(
+      {
+        region: this.region,
+      },
+      c,
+    );
     return r;
   }
 
@@ -194,6 +215,18 @@ export class Domain {
     showDiff = showDiff.replace(/^/gm, '    ');
 
     logger.write(`${this.inputs.resource.name}:\n${showDiff}`);
+  }
+
+  public async sync(): Promise<any> {
+    await this.customDomain.tryHandleAutoDomain();
+    const c = await this.getCustomDomain('sync');
+    const r = _.merge(
+      {
+        region: this.region,
+      },
+      c,
+    );
+    return await this.write(r);
   }
 
   private async preDeploy(): Promise<void> {
@@ -354,5 +387,41 @@ export class Domain {
       updateCustomDomainRequest,
     );
     logger.debug(`updateCustomDomain ${this.region}/${this.getDomainName()} success`);
+  }
+
+  private async write(customDomainMeta: any) {
+    const syncFolderName = 'sync-clone';
+
+    const baseDir = this.target
+      ? this.target
+      : path.join(this.inputs.baseDir || process.cwd(), syncFolderName);
+    const logger = GLogger.getLogger();
+    logger.debug(`sync base dir: ${baseDir}`);
+    const domainNameResourceId = this.getDomainName().replace(/\./g, '_');
+    const ymlPath = path
+      .join(baseDir, `${this.region}_${domainNameResourceId}.yaml`)
+      .replace('$', '_');
+    logger.debug(`sync yaml path: ${ymlPath}`);
+    const config = {
+      edition: '3.0.0',
+      name: this.inputs.name,
+      access: this.inputs.resource.access,
+      resources: {
+        [domainNameResourceId]: {
+          component: 'fc3-domain',
+          props: customDomainMeta,
+        },
+      },
+    };
+    logger.debug(`yaml config: ${JSON.stringify(config)}`);
+    const configStr = yaml.dump(config);
+    logger.debug(`yaml config str: ${configStr}`);
+
+    fs.mkdirSync(baseDir, { recursive: true });
+    logger.debug(`mkdir: ${baseDir}`);
+    fs.writeFileSync(ymlPath, configStr);
+    logger.debug(`write file: ${baseDir}`);
+
+    return { ymlPath };
   }
 }

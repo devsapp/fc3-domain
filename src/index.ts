@@ -44,6 +44,14 @@ export default class ComponentRos {
     return await domainObj.plan();
   }
 
+  public async sync(inputs: IInputs): Promise<any> {
+    GLogger.getLogger().debug(`sync ==> input: ${JSON.stringify(inputs)}`);
+    const credential = await inputs.getCredential();
+    inputs.credential = credential;
+    const domainObj = new Domain(inputs);
+    return await domainObj.sync();
+  }
+
   public async getSchema(inputs: IInputs) {
     const SCHEMA_FILE_PATH = path.join(__dirname, 'schema.json');
     return fs.readFileSync(SCHEMA_FILE_PATH, 'utf-8');

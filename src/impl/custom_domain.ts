@@ -12,7 +12,10 @@ export class CustomDomain {
   yes: boolean;
   domainName: string;
 
-  constructor(readonly inputs: IInputs, readonly credentials: ICredentials) {
+  constructor(
+    readonly inputs: IInputs,
+    readonly credentials: ICredentials,
+  ) {
     this.region = this.inputs.props.region;
     _.unset(this.inputs.props, 'region');
     this.domainName = _.get(this.getProps(), 'domainName');

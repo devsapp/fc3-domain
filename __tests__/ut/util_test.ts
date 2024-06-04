@@ -8,7 +8,7 @@ import inquirer from 'inquirer';
 
 describe('resolveCname', () => {
   test('should return true if domainName is resolved', async () => {
-    const ret = await resolveCname('docs.serverless-devs.com', 'serverless-devs-docs-hongkong.oss-cn-hongkong.aliyuncs.com', console);
+    const ret = await resolveCname('docs.serverless-devs.com', 'serverless-devs-manual-cn-hongkong.oss-cn-hongkong.aliyuncs.com', console);
     expect(ret).toBe(true);
   });
 

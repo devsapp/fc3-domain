@@ -46,7 +46,7 @@ export class CustomDomain {
       functionName = 'items';
     }
 
-    let autoDomainName = `${functionName}.fcv3.${userId}.${this.region}.fc.devsapp.net`;
+    let autoDomainName = `${functionName.toLowerCase()}.fcv3.${userId}.${this.region}.fc.devsapp.net`;
     const isResolve = await resolveCname(
       autoDomainName,
       `${userId}.${this.region}.fc.aliyuncs.com`,

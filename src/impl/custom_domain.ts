@@ -33,7 +33,7 @@ export class CustomDomain {
     // 取第一个 path 中的 functionName
     let functionName = this.getProps()['routeConfig']['routes'][0]['functionName'];
     const userId = this.credentials.AccountID;
-    functionName = functionName.replace(/_/g, '-');
+    functionName = functionName.replace(/_/g, '-').toLowerCase();
 
     // 针对 cadt 场景的 restfulapi 示例特殊处理
     if (
@@ -46,7 +46,7 @@ export class CustomDomain {
       functionName = 'items';
     }
 
-    let autoDomainName = `${functionName.toLowerCase()}.fcv3.${userId}.${this.region}.fc.devsapp.net`;
+    let autoDomainName = `${functionName}.fcv3.${userId}.${this.region}.fc.devsapp.net`;
     const isResolve = await resolveCname(
       autoDomainName,
       `${userId}.${this.region}.fc.aliyuncs.com`,

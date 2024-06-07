@@ -33,7 +33,7 @@ export class CustomDomain {
     // 取第一个 path 中的 functionName
     let functionName = this.getProps()['routeConfig']['routes'][0]['functionName'];
     const userId = this.credentials.AccountID;
-    functionName = functionName.replace(/_/g, '-').toLowerCase();
+    functionName = functionName.replace(/_/g, '-');
 
     // 针对 cadt 场景的 restfulapi 示例特殊处理
     if (

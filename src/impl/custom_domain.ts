@@ -2,6 +2,8 @@ import { IInputs } from '../interface/index';
 import * as _ from 'lodash';
 import GLogger from '../common/logger';
 import * as $fc20230330 from '@alicloud/fc20230330';
+import * as $OpenApi from '@alicloud/openapi-client';
+import alidnsClient, * as $alidns20150109 from '@alicloud/alidns20150109';
 import { ICredentials } from '@serverless-devs/component-interface';
 import { HttpsCertConfig, ICertConfig } from './https_cert_config';
 import AutoDomainGenerator from '@serverless-cd/srm-aliyun-fc-domain';
@@ -11,6 +13,7 @@ export class CustomDomain {
   region: string;
   yes: boolean;
   domainName: string;
+  autoCName: boolean;
 
   constructor(
     readonly inputs: IInputs,
@@ -19,8 +22,25 @@ export class CustomDomain {
     this.region = this.inputs.props.region;
     _.unset(this.inputs.props, 'region');
     this.domainName = _.get(this.getProps(), 'domainName');
+    this.autoCName = _.get(this.getProps(), 'autoCName', false);
+    _.unset(this.inputs.props, 'autoCName');
   }
+  public async alidnsClient() {
+    const {
+      AccessKeyID: accessKeyId,
+      AccessKeySecret: accessKeySecret,
+      SecurityToken: securityToken,
+    } = await this.inputs.getCredential();
 
+    const config: any = new $OpenApi.Config({
+      accessKeyId,
+      accessKeySecret,
+      securityToken,
+      endpoint: `alidns.${this.region}.aliyuncs.com`,
+    });
+
+    return new alidnsClient(config);
+  }
   public async tryHandleAutoDomain() {
     const logger = GLogger.getLogger();
     if (_.isEmpty(this.domainName)) {
@@ -74,7 +94,7 @@ export class CustomDomain {
 
   public async cnameCheck(): Promise<boolean> {
     if (this.isAutoDomain()) {
-      return await AutoDomainGenerator.checkCname(this.getDomainName());
+      return await AutoDomainGenerator.checkCname(await this.getDomainName());
     }
     return true;
   }
@@ -88,8 +108,52 @@ export class CustomDomain {
     return this.inputs.props;
   }
 
-  public getDomainName(): string {
+  public async getDomainName(): Promise<string> {
+    const { AccountID: accountID } = await this.inputs.getCredential();
+    let functionName = this.getProps()['routeConfig']['routes'][0]['functionName'];
+    const alidnsClient = await this.alidnsClient();
+    if (this.autoCName) {
+      const isDomainRecordExist = await this.isDomainRecordExist(alidnsClient);
+      const domainNames = this.domainName.split('.');
+      if (isDomainRecordExist) {
+        return this.domainName;
+      }
+      const addDomainRecordRequest = new $alidns20150109.AddDomainRecordRequest({
+        domainName: domainNames.slice(domainNames.length - 2, domainNames.length).join('.'),
+        RR: domainNames.slice(0, domainNames.length - 2).join('.'),
+        type: 'CNAME',
+        value: `${accountID}.${this.region}.fc.aliyuncs.com`,
+        TTL: 600,
+        line: 'default',
+      });
+      await alidnsClient.addDomainRecord(addDomainRecordRequest);
+      const domain = `${functionName}.fcV3.${accountID}.${this.region}.fc.devsapp.net`
+      const cnameCheck = await AutoDomainGenerator.checkCname(domain)
+      if (cnameCheck) {
+        return this.domainName;
+      }
+    }
     return this.domainName;
+  }
+
+  public async isDomainRecordExist(client: alidnsClient) {
+    const domainNames = this.domainName.split('.');
+    const domainName = domainNames.slice(domainNames.length - 2, domainNames.length).join('.');
+    const RR = domainNames.slice(0, domainNames.length - 2).join('.');
+    const describeDomainRecordsRequest = new $alidns20150109.DescribeDomainRecordsRequest({
+      domainName,
+    });
+    const request = await client.describeDomainRecords(describeDomainRecordsRequest);
+    const records = request?.body?.domainRecords?.record;
+    if (records && records.length === 0) {
+      return false;
+    }
+    for (const record of records) {
+      if (record.RR === RR) {
+        return true;
+      }
+    }
+    return false;
   }
 
   public async getICertConfig(): Promise<ICertConfig> {

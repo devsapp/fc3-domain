@@ -1,14 +1,15 @@
 edition: 3.0.0 #  命令行YAML规范版本，遵循语义化版本（Semantic Versioning）规范
 name: fcDomainApp #  项目名称
-access: quanxi #  秘钥别名
+access: gwh_test #  秘钥别名
 
 resources:
   fc-domain-test:
     component: ${path("../")}
     props: #  组件的属性值
-      region: cn-huhehaote
+      region: cn-hongkong
       # domainName: auto
-      domainName: xiliu-test.shoushuai.top
+      domainName: dds.hhj.pdy.asia
+      autoCName: true
       protocol: HTTP,HTTPS  # HTTP | HTTPS | HTTP,HTTPS
       routeConfig:
         routes:
@@ -46,15 +47,15 @@ resources:
       #   certificate: /Users/songluo/work/code-inc/domain/examples/xiliu-test.shoushuai.top.pem
       #   privateKey: /Users/songluo/work/code-inc/domain/examples/xiliu-test.shoushuai.top.key
 
-      # certConfig:
-      #   certName: test-cert
-      #   certificate: https://images.devsapp.cn/test/xiliu-test-cert/xiliu-test.shoushuai.top.pem
-      #   privateKey: https://images.devsapp.cn/test/xiliu-test-cert/xiliu-test.shoushuai.top.key
-
       certConfig:
         certName: test-cert
-        certificate: oss://cn-huhehaote/serverless-devs-fc3-ci-test/xiliu-test.shoushuai.top.pem
-        privateKey: oss://cn-huhehaote/serverless-devs-fc3-ci-test/xiliu-test.shoushuai.top.key
+        certificate: https://images.devsapp.cn/test/xiliu-test-cert/xiliu-test.shoushuai.top.pem
+        privateKey: https://images.devsapp.cn/test/xiliu-test-cert/xiliu-test.shoushuai.top.key
+
+      # certConfig:
+      #   certName: test-cert
+      #   certificate: oss://cn-huhehaote/serverless-devs-fc3-ci-test/xiliu-test.shoushuai.top.pem
+      #   privateKey: oss://cn-huhehaote/serverless-devs-fc3-ci-test/xiliu-test.shoushuai.top.key
 
       # certConfig:
       #   certId: 7246639

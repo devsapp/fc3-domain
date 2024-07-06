@@ -8,7 +8,7 @@ resources:
     props: #  组件的属性值
       region: cn-hongkong
       # domainName: auto
-      domainName: dds.hhj.pdy.asia
+      domainName: dds.aip.pdy.asia
       autoCName: true
       protocol: HTTP,HTTPS  # HTTP | HTTPS | HTTP,HTTPS
       routeConfig:

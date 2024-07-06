@@ -7,7 +7,7 @@ import alidnsClient, * as $alidns20150109 from '@alicloud/alidns20150109';
 import { ICredentials } from '@serverless-devs/component-interface';
 import { HttpsCertConfig, ICertConfig } from './https_cert_config';
 import AutoDomainGenerator from '@serverless-cd/srm-aliyun-fc-domain';
-import { resolveCname } from './util';
+import { checkCname, resolveCname, sleep } from './util';
 
 export class CustomDomain {
   region: string;
@@ -109,17 +109,23 @@ export class CustomDomain {
   }
 
   public async getDomainName(): Promise<string> {
+    const logger = GLogger.getLogger();
     const { AccountID: accountID } = await this.inputs.getCredential();
-    let functionName = this.getProps()['routeConfig']['routes'][0]['functionName'];
     const alidnsClient = await this.alidnsClient();
     if (this.autoCName) {
-      const isDomainRecordExist = await this.isDomainRecordExist(alidnsClient);
+      logger.debug('Get domainName, please wait!');
       const domainNames = this.domainName.split('.');
+      const domainName = domainNames.slice(domainNames.length - 2, domainNames.length).join('.');
+      const isDomainExist = await this.isDomainExist(alidnsClient);
+      if (!isDomainExist) {
+        throw new Error(`Domain ${this.domainName} not exist`);
+      }
+      const isDomainRecordExist = await this.isDomainRecordExist(alidnsClient);
       if (isDomainRecordExist) {
         return this.domainName;
       }
       const addDomainRecordRequest = new $alidns20150109.AddDomainRecordRequest({
-        domainName: domainNames.slice(domainNames.length - 2, domainNames.length).join('.'),
+        domainName,
         RR: domainNames.slice(0, domainNames.length - 2).join('.'),
         type: 'CNAME',
         value: `${accountID}.${this.region}.fc.aliyuncs.com`,
@@ -127,10 +133,16 @@ export class CustomDomain {
         line: 'default',
       });
       await alidnsClient.addDomainRecord(addDomainRecordRequest);
-      const domain = `${functionName}.fcV3.${accountID}.${this.region}.fc.devsapp.net`
-      const cnameCheck = await AutoDomainGenerator.checkCname(domain)
-      if (cnameCheck) {
-        return this.domainName;
+      const MAXRetry = 60;
+      let retry = 0;
+      let cnameCheck;
+      while (!cnameCheck?.status) {
+        cnameCheck = await checkCname(this.region, { domain: this.domainName });
+        retry++;
+        if (retry > MAXRetry) {
+          throw new Error('auto cname is not ok，please try again.');
+        }
+        await sleep(1);
       }
     }
     return this.domainName;
@@ -154,6 +166,24 @@ export class CustomDomain {
       }
     }
     return false;
+  }
+
+  public async isDomainExist(client: alidnsClient) {
+    const logger = GLogger.getLogger();
+    const domainNames = this.domainName.split('.');
+    const domainName = domainNames.slice(domainNames.length - 2, domainNames.length).join('.');
+    try {
+      const describeDomainInfoRequest = new $alidns20150109.DescribeDomainInfoRequest({
+        domainName,
+      });
+      const response = await client.describeDomainInfo(describeDomainInfoRequest);
+      logger.debug(`describeDomainInfo ====>\n${JSON.stringify(response.body, null, 2)}`);
+      if (response?.body?.aliDomain) {
+        return true;
+      }
+    } catch (error) {
+      throw new Error(`DomainName ${domainName} is not exist.`);
+    }
   }
 
   public async getICertConfig(): Promise<ICertConfig> {

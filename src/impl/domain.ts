@@ -93,6 +93,7 @@ export class Domain {
     this.customDomain.checkPropsValid();
     const logger = GLogger.getLogger();
     await this.preDeploy();
+    const domainName = await this.getDomainName();
 
     if (!this.yes) {
       logger.debug('Detection does not require deployment of custom domain, skipping deployment');
@@ -105,9 +106,7 @@ export class Domain {
     } catch (err) {
       if (err.code !== FC_API_ERROR_CODE.DomainNameNotFound) {
         logger.debug(
-          `Checking domain ${this.region}/${await this.getDomainName()} error: ${
-            err.message
-          }, retrying create`,
+          `Checking domain ${this.region}/${domainName} error: ${err.message}, retrying create`,
         );
       }
     }
@@ -125,7 +124,7 @@ export class Domain {
     while (true) {
       try {
         if (!needUpdate) {
-          logger.debug(`Need create custom domain ${this.region}/${await this.getDomainName()}`);
+          logger.debug(`Need create custom domain ${this.region}/${domainName}`);
           try {
             await this.createCustomDomain();
             let r = await this.getCustomDomain('deploy');
@@ -140,7 +139,7 @@ export class Domain {
             needUpdate = true;
           }
         }
-        logger.debug(`Update custom domain ${this.region}/${await this.getDomainName()} ...`);
+        logger.debug(`Update custom domain ${this.region}/${domainName} ...`);
         await this.updateCustomDomain();
         break;
       } catch (ex) {
@@ -155,7 +154,7 @@ export class Domain {
           'retrying',
           'custom-domain',
           needUpdate ? 'update' : 'create',
-          `${this.region}/${await this.getDomainName()}`,
+          `${this.region}/${domainName}`,
           retry,
         );
         await sleep(retryTime);
@@ -176,20 +175,19 @@ export class Domain {
   public async remove(): Promise<void> {
     await this.customDomain.tryHandleAutoDomain();
     const logger = GLogger.getLogger();
-    logger.write(`Remove custom domain: ${this.region}/${await this.getDomainName()}`);
+    const domainName = await this.getDomainName();
+    logger.write(`Remove custom domain: ${this.region}/${domainName}`);
     console.log();
     const client = this.getFcClient('remove');
     if (this.yes) {
-      await client.deleteCustomDomain(await this.getDomainName());
-      logger.debug(`delete custom domain ${this.region}/${await this.getDomainName()} success`);
+      await client.deleteCustomDomain(domainName);
+      logger.debug(`delete custom domain ${this.region}/${domainName} success`);
       return;
     }
-    const msg = `Do you want to delete this custom domain ${
-      this.region
-    }/${await this.getDomainName()}`;
+    const msg = `Do you want to delete this custom domain ${this.region}/${domainName}`;
     if (await promptForConfirmOrDetails(msg)) {
-      await client.deleteCustomDomain(await this.getDomainName());
-      logger.debug(`delete custom domain ${this.region}/${await this.getDomainName()} success`);
+      await client.deleteCustomDomain(domainName);
+      logger.debug(`delete custom domain ${this.region}/${domainName} success`);
     }
   }
 
@@ -303,7 +301,8 @@ export class Domain {
 
   private async getCustomDomain(command: string): Promise<any> {
     //const logger = GLogger.getLogger();
-    const result = await this.getFcClient(command).getCustomDomain(await this.getDomainName());
+    const domainName = await this.getDomainName();
+    const result = await this.getFcClient(command).getCustomDomain(domainName);
     const body = result.toMap().body;
 
     if (_.isEmpty(body.tlsConfig)) {
@@ -324,8 +323,9 @@ export class Domain {
 
   private async createCustomDomain(): Promise<void> {
     const logger = GLogger.getLogger();
+    const domainName = await this.getDomainName();
     let createCustomDomainInput = new $fc20230330.CreateCustomDomainInput({
-      domainName: await this.getDomainName(),
+      domainName: domainName,
       protocol: _.get(this.getProps(), 'protocol'),
     });
 
@@ -352,11 +352,12 @@ export class Domain {
       body: createCustomDomainInput,
     });
     await this.getFcClient('deploy').createCustomDomain(createCustomDomainRequest);
-    logger.debug(`createCustomDomain ${this.region}/${await this.getDomainName()} success`);
+    logger.debug(`createCustomDomain ${this.region}/${domainName} success`);
   }
 
   private async updateCustomDomain(): Promise<void> {
     const logger = GLogger.getLogger();
+    const domainName = await this.getDomainName();
     let updateCustomDomainInput = new $fc20230330.UpdateCustomDomainInput({
       protocol: _.get(this.getProps(), 'protocol'),
     });
@@ -384,11 +385,8 @@ export class Domain {
     let updateCustomDomainRequest = new $fc20230330.UpdateCustomDomainRequest({
       body: updateCustomDomainInput,
     });
-    await this.getFcClient('deploy').updateCustomDomain(
-      await this.getDomainName(),
-      updateCustomDomainRequest,
-    );
-    logger.debug(`updateCustomDomain ${this.region}/${await this.getDomainName()} success`);
+    await this.getFcClient('deploy').updateCustomDomain(domainName, updateCustomDomainRequest);
+    logger.debug(`updateCustomDomain ${this.region}/${domainName} success`);
   }
 
   private async write(customDomainMeta: any) {

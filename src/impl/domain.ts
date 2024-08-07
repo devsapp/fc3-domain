@@ -397,7 +397,8 @@ export class Domain {
       : path.join(this.inputs.baseDir || process.cwd(), syncFolderName);
     const logger = GLogger.getLogger();
     logger.debug(`sync base dir: ${baseDir}`);
-    const domainNameResourceId = this.getDomainName().replace(/\./g, '_');
+    const domainName = await this.getDomainName();
+    const domainNameResourceId = domainName.replace(/\./g, '_');
     const ymlPath = path
       .join(baseDir, `${this.region}_${domainNameResourceId}.yaml`)
       .replace('$', '_');

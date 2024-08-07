@@ -20,6 +20,8 @@ enum Region {
   'us-east-1' = 'us-east-1',
   'us-west-1' = 'us-west-1',
   'ap-south-1' = 'ap-south-1',
+  'cn-heyuan-acdr-1' = 'cn-heyuan-acdr-1',
+  'cn-wulanchabu' = 'cn-wulanchabu',
 }
 
 export type IRegion = `${Region}`;

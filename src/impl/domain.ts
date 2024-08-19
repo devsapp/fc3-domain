@@ -176,18 +176,29 @@ export class Domain {
     await this.customDomain.tryHandleAutoDomain();
     const logger = GLogger.getLogger();
     const domainName = await this.getDomainName();
-    logger.write(`Remove custom domain: ${this.region}/${domainName}`);
+    const region = this.region;
+    logger.write(`Remove custom domain: ${region}/${domainName}`);
     console.log();
     const client = this.getFcClient('remove');
     if (this.yes) {
-      await client.deleteCustomDomain(domainName);
-      logger.debug(`delete custom domain ${this.region}/${domainName} success`);
+      await delCustomDomain();
       return;
     }
     const msg = `Do you want to delete this custom domain ${this.region}/${domainName}`;
     if (await promptForConfirmOrDetails(msg)) {
-      await client.deleteCustomDomain(domainName);
-      logger.debug(`delete custom domain ${this.region}/${domainName} success`);
+      await delCustomDomain();
+    }
+
+    async function delCustomDomain() {
+      try {
+        await client.deleteCustomDomain(domainName);
+        logger.debug(`delete custom domain ${region}/${domainName} success`);
+      } catch (error) {
+        logger.error(`delete custom domain error: ${error}`);
+        if (error.code !== 'DomainNameNotFound' || error.statusCode !== 404) {
+          throw error;
+        }
+      }
     }
   }
 

@@ -22,6 +22,19 @@ describe('CustomDomain', () => {
       handler: 'index.handler',
       memorySize: 128,
       timeout: 60,
+      routeConfig: {
+        routes: [
+          {
+            functionName: "start-py",
+            methods: [
+              "GET",
+              "POST"
+            ],
+            path: "/*",
+            qualifier: "LATEST"
+          }
+        ]
+      }
     },
     // 执行的方法
     command: 'deploy',

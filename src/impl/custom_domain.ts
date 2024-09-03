@@ -49,24 +49,9 @@ export class CustomDomain {
     if (!this.isAutoDomain()) {
       return;
     }
-
-    // 取第一个 path 中的 functionName
+    const autoDomainName = this.getAutoDomainName();
     let functionName = this.getProps()['routeConfig']['routes'][0]['functionName'];
     const userId = this.credentials.AccountID;
-    functionName = functionName.replace(/_/g, '-');
-
-    // 针对 cadt 场景的 restfulapi 示例特殊处理
-    if (
-      functionName === 'ListItems' ||
-      functionName === 'CreateItem' ||
-      functionName === 'GetItem' ||
-      functionName === 'UpdateItem' ||
-      functionName === 'DeleteItem'
-    ) {
-      functionName = 'items';
-    }
-
-    let autoDomainName = `${functionName}.fcv3.${userId}.${this.region}.fc.devsapp.net`;
     const isResolve = await resolveCname(
       autoDomainName,
       `${userId}.${this.region}.fc.aliyuncs.com`,
@@ -92,6 +77,15 @@ export class CustomDomain {
     logger.info(`auto generate a new domain = ${this.domainName}`);
   }
 
+  private getAutoDomainName() {
+    // 取第一个 path 中的 functionName
+    let functionName = this.getProps()['routeConfig']['routes'][0]['functionName'];
+    const userId = this.credentials.AccountID;
+    functionName = functionName.replace(/_/g, '-').toLowerCase();
+    let autoDomainName = `${functionName}.fcv3.${userId}.${this.region}.fc.devsapp.net`;
+    return autoDomainName;
+  }
+
   public async cnameCheck(): Promise<boolean> {
     if (this.isAutoDomain()) {
       return await AutoDomainGenerator.checkCname(await this.getDomainName());
@@ -101,7 +95,7 @@ export class CustomDomain {
 
   public isAutoDomain(): boolean {
     let domainName = _.get(this.getProps(), 'domainName');
-    return domainName.toLowerCase() === 'auto';
+    return domainName.toLowerCase() === 'auto' || domainName === this.getAutoDomainName();
   }
 
   public getProps(): any {

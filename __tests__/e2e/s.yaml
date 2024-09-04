@@ -58,3 +58,28 @@ resources:
             methods:
               - GET
             path: /b
+
+
+  fc-domain-auto2: 
+    component: ${env('domain_component_version', path('../../'))}
+    props: #  组件的属性值
+      region: cn-huhehaote
+      domainName: test-serverless-devs-custom-domain-ci-3.fcv3.1431999136518149.cn-huhehaote.fc.devsapp.net
+      protocol: HTTP
+      routeConfig:
+        routes:
+          - functionName: test_serverless_devs_custom_domain_ci_3
+            methods:
+              - GET
+            path: /a
+            qualifier: LATEST
+            rewriteConfig:
+              equalRules:
+                - match: /equalRules
+                  replacement: /xxxx
+              regexRules:
+                - match: ^/old/[a-z]+/
+                  replacement: /xxxx
+              wildcardRules:
+                - match: /api/*
+                  replacement: /$1

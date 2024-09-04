@@ -3,7 +3,9 @@ import { CustomDomain } from '../../src/impl/custom_domain'
 import { IInputs } from '../../src/interface'
 import GLogger from '../../src/common/logger';
 import path from 'path';
+import * as _ from 'lodash';
 GLogger.setLogger(console)
+
 
 describe('CustomDomain', () => {
   let customDomainClass
@@ -59,14 +61,15 @@ describe('CustomDomain', () => {
     }),
   };
   const credentials: ICredentials = {
-    AccountID: 'test',
-    AccessKeyID: 'test',
-    AccessKeySecret: 'test',
+    AccountID: process.env.DEVS_TEST_UID || 'test',
+    AccessKeyID: process.env.DEVS_TEST_AK_ID || 'test',
+    AccessKeySecret: process.env.DEVS_TEST_AK_SECRET || 'test',
   }
 
   describe('tryHandleAutoDomain', () => {
-    it('should throw error when domainName is null', () => {
-      customDomainClass = new CustomDomain(inputs, credentials);
+    it('should throw error when domainName is null', () => { 
+      const inputs2 = _.cloneDeep(inputs)
+      customDomainClass = new CustomDomain(_.cloneDeep(inputs2), credentials);
 
       expect(async () => {
         await customDomainClass.tryHandleAutoDomain()
@@ -74,12 +77,41 @@ describe('CustomDomain', () => {
     })
 
     it('should the second if return when domainName is not auto', async () => {
-      inputs.props.domainName = 'test.com'
-      customDomainClass = new CustomDomain(inputs, credentials);
+      const inputs2 = _.cloneDeep(inputs)
+      inputs2.props.domainName = 'test.com'
+      customDomainClass = new CustomDomain(inputs2, credentials);
 
       const result = await customDomainClass.tryHandleAutoDomain()
 
       expect(result).toBe(undefined)
+    })
+  })
+
+  describe('isAutoDomain', () => {
+    it('should return true when domainName is auto', () => {
+      const inputs2 = _.cloneDeep(inputs)
+      inputs2.props.domainName = 'auto'
+      customDomainClass = new CustomDomain(inputs2, credentials);
+      const result = customDomainClass.isAutoDomain()
+      expect(result).toBe(true)
+    })
+
+    it('should return true when domainName is **.fc.devsapp.net', () => {
+      const inputs2 = _.cloneDeep(inputs)
+      inputs2.props.region = 'cn-huhehaote'
+      inputs2.props.domainName = `start-py.fcv3.${process.env.DEVS_TEST_UID}.cn-huhehaote.fc.devsapp.net`
+      customDomainClass = new CustomDomain(inputs2, credentials);
+      const result = customDomainClass.isAutoDomain()
+      expect(result).toBe(true)
+    })
+
+    it('should return true when domainName is auto', () => {
+      const inputs2 = _.cloneDeep(inputs)
+      inputs2.props.domainName = 'abc.com'
+      inputs2.props.region = 'cn-huhehaote'
+      customDomainClass = new CustomDomain(inputs2, credentials);
+      const result = customDomainClass.isAutoDomain()
+      expect(result).toBe(false)
     })
   })
 })

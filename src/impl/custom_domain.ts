@@ -96,7 +96,8 @@ export class CustomDomain {
 
   public isAutoDomain(): boolean {
     let domainName = _.get(this.getProps(), 'domainName');
-    return domainName.toLowerCase() === 'auto' || domainName === this.getAutoDomainName();
+    const { autoDomainName } = this.getAutoDomainName();
+    return domainName.toLowerCase() === 'auto' || domainName === autoDomainName;
   }
 
   public getProps(): any {

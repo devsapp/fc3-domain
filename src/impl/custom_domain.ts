@@ -49,8 +49,7 @@ export class CustomDomain {
     if (!this.isAutoDomain()) {
       return;
     }
-    const autoDomainName = this.getAutoDomainName();
-    let functionName = this.getProps()['routeConfig']['routes'][0]['functionName'];
+    const { autoDomainName, functionName } = this.getAutoDomainName();
     const userId = this.credentials.AccountID;
     const isResolve = await resolveCname(
       autoDomainName,
@@ -78,12 +77,14 @@ export class CustomDomain {
   }
 
   private getAutoDomainName() {
+    const logger = GLogger.getLogger();
     // 取第一个 path 中的 functionName
     let functionName = this.getProps()['routeConfig']['routes'][0]['functionName'];
     const userId = this.credentials.AccountID;
     functionName = functionName.replace(/_/g, '-').toLowerCase();
     let autoDomainName = `${functionName}.fcv3.${userId}.${this.region}.fc.devsapp.net`;
-    return autoDomainName;
+    logger.debug(`getAutoDomainName = ${autoDomainName}`);
+    return { autoDomainName, functionName };
   }
 
   public async cnameCheck(): Promise<boolean> {

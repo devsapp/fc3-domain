@@ -106,10 +106,10 @@ export class CustomDomain {
 
   public async getDomainName(): Promise<string> {
     const logger = GLogger.getLogger();
-    const { AccountID: accountID } = await this.inputs.getCredential();
-    const alidnsClient = await this.alidnsClient();
     if (this.autoCName) {
       logger.debug('Get domainName, please wait!');
+      const { AccountID: accountID } = await this.inputs.getCredential();
+      const alidnsClient = await this.alidnsClient();
       const domainNames = this.domainName.split('.');
       const domainName = domainNames.slice(domainNames.length - 2, domainNames.length).join('.');
       const isDomainExist = await this.isDomainExist(alidnsClient);

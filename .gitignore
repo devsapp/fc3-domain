@@ -53,3 +53,5 @@ download
 
 dist
 replace-committers.sh
+
+git-statistics.sh

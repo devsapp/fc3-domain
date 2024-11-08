@@ -173,7 +173,9 @@ export class Domain {
   }
 
   public async remove(): Promise<void> {
-    await this.customDomain.tryHandleAutoDomain();
+    if (_.get(this.getProps(), 'domainName').toLowerCase() === 'auto') {
+      await this.customDomain.tryHandleAutoDomain();
+    }
     const logger = GLogger.getLogger();
     const domainName = await this.getDomainName();
     const region = this.region;

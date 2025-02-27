@@ -33,7 +33,7 @@
     "@alicloud/alidns20150109": "^3.4.0",
     "@alicloud/fc20230330": "^4.1.0",
     "@alicloud/pop-core": "^1.7.13",
-    "@serverless-cd/srm-aliyun-fc-domain": "^0.0.1-beta.4",
+    "@serverless-cd/srm-aliyun-fc-domain": "^0.0.1-beta.5",
     "@serverless-devs/component-interface": "^0.0.4",
     "@serverless-devs/diff": "^0.0.3-beta.6",
     "@serverless-devs/utils": "^0.0.15",

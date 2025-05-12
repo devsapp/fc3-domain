@@ -31,13 +31,13 @@
   },
   "dependencies": {
     "@alicloud/alidns20150109": "^3.4.0",
-    "@alicloud/fc20230330": "^4.1.0",
+    "@alicloud/fc20230330": "^4.3.3",
     "@alicloud/pop-core": "^1.7.13",
     "@serverless-cd/srm-aliyun-fc-domain": "^0.0.1-beta.6",
-    "@serverless-devs/component-interface": "^0.0.4",
+    "@serverless-devs/component-interface": "^0.0.6",
     "@serverless-devs/diff": "^0.0.3-beta.6",
-    "@serverless-devs/utils": "^0.0.15",
-    "ali-oss": "^6.20.0",
+    "@serverless-devs/utils": "^0.0.17",
+    "ali-oss": "6.20.0",
     "inquirer": "^8.2.6",
     "lodash": "^4.17.21",
     "node-fetch": "^2.7.0",
@@ -46,8 +46,8 @@
     "uuid": "^9.0.1"
   },
   "devDependencies": {
-    "@types/jest": "^29.5.12",
-    "@types/mocha": "^10.0.6",
+    "@types/jest": "^29.5.14",
+    "@types/mocha": "^10.0.10",
     "@types/node": "^20.12.11",
     "esbuild": "^0.21.1",
     "jest": "^29.7.0",

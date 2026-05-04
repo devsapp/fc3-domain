@@ -81,4 +81,25 @@ Examples with CLI:
       ],
     },
   },
+  list: {
+    help: {
+      description: `list fc custom domains
+
+Examples with CLI:
+  $ s cli fc3-domain list --region cn-hangzhou -a default
+  $ s cli fc3-domain list --region cn-hangzhou --prefix test- --limit 20 -a default
+  $ s cli fc3-domain list --region cn-hangzhou --table -a default`,
+      summary: 'list fc custom domains',
+      option: [
+        [
+          '--region <region>',
+          '[C-Required] Specify the fc region, you can see all supported regions in https://help.aliyun.com/document_detail/2512917.html',
+        ],
+        ['--prefix <prefix>', 'Filter domains by name prefix'],
+        ['--limit <limit>', 'Page size, default 100'],
+        ['--next-token <token>', 'Pagination token'],
+        ['--table', 'Output as formatted table'],
+      ],
+    },
+  },
 };

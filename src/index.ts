@@ -4,8 +4,19 @@ import command_help from './impl/command_help';
 import GLogger from './common/logger';
 import * as fs from 'fs';
 import path from 'path';
+import * as _ from 'lodash';
+import FCClient, * as $fc20230330 from '@alicloud/fc20230330';
+import * as $OpenApi from '@alicloud/openapi-client';
+import * as $Util from '@alicloud/tea-util';
+import { parseArgv } from '@serverless-devs/utils';
+import { checkRegion } from './impl/region';
+import {
+  FC_CLIENT_CONNECT_TIMEOUT,
+  FC_CLIENT_READ_TIMEOUT,
+  getCustomEndpoint,
+} from './common/constants';
 
-export default class ComponentRos {
+export default class ComponentFc3Domain {
   protected commands: any;
   constructor({ logger }: any) {
     GLogger.setLogger(logger || console);
@@ -50,6 +61,55 @@ export default class ComponentRos {
     inputs.credential = credential;
     const domainObj = new Domain(inputs);
     return await domainObj.sync();
+  }
+
+  public async list(inputs: IInputs): Promise<any> {
+    const opts = parseArgv(inputs.args, {
+      alias: { help: 'h' },
+      boolean: ['help', 'table'],
+      string: ['region', 'prefix', 'limit', 'next-token'],
+    });
+
+    const region = opts.region || _.get(inputs, 'props.region');
+    checkRegion(region);
+
+    const credential = await inputs.getCredential();
+    const {
+      AccountID: accountID,
+      AccessKeyID: accessKeyId,
+      AccessKeySecret: accessKeySecret,
+      SecurityToken: securityToken,
+    } = credential;
+
+    const { endpoint, protocol } = getCustomEndpoint(
+      _.get(inputs, 'props.endpoint'),
+      accountID,
+      region,
+    );
+
+    const config = new $OpenApi.Config({
+      accessKeyId,
+      accessKeySecret,
+      securityToken,
+      protocol,
+      endpoint,
+      readTimeout: FC_CLIENT_READ_TIMEOUT,
+      connectTimeout: FC_CLIENT_CONNECT_TIMEOUT,
+    });
+    const client = new FCClient(config);
+
+    const limit = opts.limit ? parseInt(opts.limit) : 100;
+    const req = new $fc20230330.ListCustomDomainsRequest({ limit });
+    if (opts.prefix) req.prefix = opts.prefix;
+    if (opts['next-token']) req.nextToken = opts['next-token'];
+
+    const result = await client.listCustomDomainsWithOptions(req, {}, new $Util.RuntimeOptions({}));
+    const body = result.toMap().body;
+
+    if (opts.table) {
+      GLogger.getLogger().table(body);
+    }
+    return body;
   }
 
   public async getSchema(inputs: IInputs) {

@@ -55,3 +55,6 @@ dist
 replace-committers.sh
 
 git-statistics.sh
+
+docs/
+CLAUDE.md

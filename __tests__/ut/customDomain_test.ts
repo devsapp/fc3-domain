@@ -99,7 +99,7 @@ describe('CustomDomain', () => {
     it('should return true when domainName is **.fc.devsapp.net', () => {
       const inputs2 = _.cloneDeep(inputs)
       inputs2.props.region = 'cn-huhehaote'
-      inputs2.props.domainName = `start-py.fcv3.${process.env.DEVS_TEST_UID}.cn-huhehaote.fc.devsapp.net`
+      inputs2.props.domainName = `start-py.fcv3.${credentials.AccountID}.cn-huhehaote.fc.devsapp.net`
       customDomainClass = new CustomDomain(inputs2, credentials);
       const result = customDomainClass.isAutoDomain()
       expect(result).toBe(true)

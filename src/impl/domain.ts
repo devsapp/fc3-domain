@@ -11,6 +11,11 @@ import { parseArgv } from '@serverless-devs/utils';
 import { promptForConfirmOrDetails, promptForConfirmOK, sleep } from './util';
 import { CustomDomain } from './custom_domain';
 import { IRegion, checkRegion } from './region';
+import {
+  FC_CLIENT_CONNECT_TIMEOUT,
+  FC_CLIENT_READ_TIMEOUT,
+  getCustomEndpoint,
+} from '../common/constants';
 
 export enum FC_API_ERROR_CODE {
   DomainNameNotFound = 'DomainNameNotFound', // 自定义域名不存在
@@ -18,9 +23,6 @@ export enum FC_API_ERROR_CODE {
 }
 
 const FC_DEPLOY_RETRY_COUNT = 3;
-const FC_CLIENT_CONNECT_TIMEOUT: number =
-  parseInt(process.env.FC_CLIENT_CONNECT_TIMEOUT || '5') * 1000;
-const FC_CLIENT_READ_TIMEOUT: number = parseInt(process.env.FC_CLIENT_READ_TIMEOUT || '10') * 1000;
 
 export class Domain {
   region: IRegion;
@@ -63,8 +65,11 @@ export class Domain {
       SecurityToken: securityToken,
     } = this.inputs.credential;
 
-    const endpoint = `${accountID}.${this.region}.fc.aliyuncs.com`;
-    const protocol = 'https';
+    const { endpoint, protocol } = getCustomEndpoint(
+      _.get(this.inputs, 'props.endpoint'),
+      accountID,
+      this.region,
+    );
     const config = new $OpenApi.Config({
       accessKeyId,
       accessKeySecret,

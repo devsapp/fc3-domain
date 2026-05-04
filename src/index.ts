@@ -10,6 +10,7 @@ import * as $OpenApi from '@alicloud/openapi-client';
 import * as $Util from '@alicloud/tea-util';
 import { parseArgv } from '@serverless-devs/utils';
 import { checkRegion } from './impl/region';
+import { tableShow } from './impl/util';
 import {
   FC_CLIENT_CONNECT_TIMEOUT,
   FC_CLIENT_READ_TIMEOUT,
@@ -107,7 +108,9 @@ export default class ComponentFc3Domain {
     const body = result.toMap().body;
 
     if (opts.table) {
-      GLogger.getLogger().table(body);
+      const showKey = ['domainName', 'protocol', 'createdTime', 'lastModifiedTime'];
+      tableShow(body.customDomains || [], showKey);
+      return;
     }
     return body;
   }

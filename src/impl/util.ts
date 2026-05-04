@@ -1,6 +1,7 @@
 const dns = require('dns');
 const { promisify } = require('util');
 import inquirer from 'inquirer';
+import Table from 'tty-table';
 
 const fetch = require('node-fetch');
 const resolveCnameAsync = promisify(dns.resolveCname);
@@ -64,4 +65,26 @@ export async function checkCname(region: string, payload: any): Promise<any> {
 
   const resJson = await res.json();
   return resJson;
+}
+
+export function tableShow(data: any, showKey: string[]) {
+  const options = {
+    borderStyle: 'solid',
+    borderColor: 'blue',
+    headerAlign: 'center',
+    align: 'left',
+    color: 'cyan',
+    width: '100%',
+  };
+
+  const header = showKey.map((value) => ({
+    value,
+    headerColor: 'cyan',
+    color: 'cyan',
+    align: 'left',
+    width: 'auto',
+    formatter: (v: any) => v,
+  }));
+
+  console.log(Table(header, data, options).render());
 }
